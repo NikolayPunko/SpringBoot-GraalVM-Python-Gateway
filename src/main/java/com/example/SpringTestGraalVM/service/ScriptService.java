@@ -35,7 +35,7 @@ public class ScriptService {
 
     public String getMethod3() {
         ScriptContext context = ContextPool.borrowContext();
-        String result = PythonConfiguration.getPythonService(context).testMethod_3(new Person("Ivan", 35));
+        String result = PythonConfiguration.getPythonService(context).testMethod_3(new Person("Ivan", "ivan@mail.ru"));
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
@@ -47,7 +47,7 @@ public class ScriptService {
 
     public Person getMethod4() {
         ScriptContext context = ContextPool.borrowContext();
-        Person result = PythonConfiguration.getPythonService(context).testMethod_4(new Person("Ivan", 35));
+        Person result = PythonConfiguration.getPythonService(context).testMethod_4(new Person("Ivan", "ivan@mail.ru"));
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
