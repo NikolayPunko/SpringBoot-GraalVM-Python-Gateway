@@ -5,11 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginResponseDto {
+public class LoginResponseDTO {
 
     private String uuid;
 
-    public LoginResponseDto(String uuid) {
+    public LoginResponseDTO(String uuid) {
         this.uuid = uuid;
     }
 }
