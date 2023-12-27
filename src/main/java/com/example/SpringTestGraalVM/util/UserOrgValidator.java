@@ -1,7 +1,7 @@
 package com.example.SpringTestGraalVM.util;
 
-import com.example.SpringTestGraalVM.model.Person;
-import com.example.SpringTestGraalVM.service.PeopleService;
+import com.example.SpringTestGraalVM.model.UserOrg;
+import com.example.SpringTestGraalVM.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,25 +9,25 @@ import org.springframework.validation.Validator;
 
 
 @Component
-public class PersonValidator implements Validator {
+public class UserOrgValidator implements Validator {
 
-    private final PeopleService peopleService;
+    private final UsersService usersService;
 
     @Autowired
-    public PersonValidator(PeopleService peopleService) {
-        this.peopleService = peopleService;
+    public UserOrgValidator(UsersService usersService) {
+        this.usersService = usersService;
     }
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return Person.class.equals(clazz);
+        return UserOrg.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        Person person = (Person) target;
+        UserOrg userOrg = (UserOrg) target;
 
-        if (peopleService.findByUsername(person.getUsername()).isPresent())
+        if (usersService.findByUsername(userOrg.getUsername()).isPresent())
             errors.rejectValue("username", "", "A user with the same name already exists");
     }
 }

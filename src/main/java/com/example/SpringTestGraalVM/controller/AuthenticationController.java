@@ -2,13 +2,13 @@ package com.example.SpringTestGraalVM.controller;
 
 import com.example.SpringTestGraalVM.dto.LoginRequestDTO;
 import com.example.SpringTestGraalVM.dto.LoginResponseDTO;
-import com.example.SpringTestGraalVM.dto.PersonDTO;
+import com.example.SpringTestGraalVM.dto.UserOrgDTO;
 import com.example.SpringTestGraalVM.exceptions.PersonNotCreatedException;
-import com.example.SpringTestGraalVM.model.Person;
+import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.security.JWTUtil;
 import com.example.SpringTestGraalVM.service.PersonDetailsService;
 import com.example.SpringTestGraalVM.service.RegistrationService;
-import com.example.SpringTestGraalVM.util.PersonValidator;
+import com.example.SpringTestGraalVM.util.UserOrgValidator;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,14 @@ import java.util.List;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private final PersonValidator personValidator;
+    private final UserOrgValidator userOrgValidator;
     private final RegistrationService registrationService;
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthenticationController(PersonValidator personValidator, RegistrationService registrationService, JWTUtil jwtUtil, AuthenticationManager authenticationManager, PersonDetailsService personDetailsService) {
-        this.personValidator = personValidator;
+    public AuthenticationController(UserOrgValidator userOrgValidator, RegistrationService registrationService, JWTUtil jwtUtil, AuthenticationManager authenticationManager, PersonDetailsService personDetailsService) {
+        this.userOrgValidator = userOrgValidator;
         this.registrationService = registrationService;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
@@ -56,11 +56,11 @@ public class AuthenticationController {
 
 
     @PostMapping("/registration")
-    public ResponseEntity<LoginResponseDTO> performRegistration(@RequestBody @Valid PersonDTO personDTO,
+    public ResponseEntity<LoginResponseDTO> performRegistration(@RequestBody @Valid UserOrgDTO userOrgDTO,
                                                                 BindingResult bindingResult) {
-        Person person = convertToPerson(personDTO);
+        UserOrg userOrg = convertToPerson(userOrgDTO);
 
-        personValidator.validate(person, bindingResult);
+        userOrgValidator.validate(userOrg, bindingResult);
 
         if (bindingResult.hasErrors()){
             StringBuilder errorMessage = new StringBuilder();
@@ -75,14 +75,14 @@ public class AuthenticationController {
             throw new PersonNotCreatedException(errorMessage.toString());
         }
 
-        registrationService.register(person);
+        registrationService.register(userOrg);
 
-        String token = jwtUtil.generateToken(person.getUsername());
+        String token = jwtUtil.generateToken(userOrg.getUsername());
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
-    private Person convertToPerson(PersonDTO personDTO) {
-        return new ModelMapper().map(personDTO, Person.class);
+    private UserOrg convertToPerson(UserOrgDTO userOrgDTO) {
+        return new ModelMapper().map(userOrgDTO, UserOrg.class);
     }
 
 

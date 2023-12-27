@@ -1,7 +1,7 @@
 package com.example.SpringTestGraalVM.service;
 
-import com.example.SpringTestGraalVM.model.Person;
-import com.example.SpringTestGraalVM.repositories.PeopleRepository;
+import com.example.SpringTestGraalVM.model.UserOrg;
+import com.example.SpringTestGraalVM.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,20 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RegistrationService {
 
-    private final PeopleRepository peopleRepository;
+    private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public RegistrationService(PeopleRepository peopleRepository, PasswordEncoder passwordEncoder) {
-        this.peopleRepository = peopleRepository;
+    public RegistrationService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+        this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public void register(Person person){
-        person.setRole("ROLE_USER");
-        String encodedPassword = passwordEncoder.encode(person.getPassword()); //шифруем
-        person.setPassword(encodedPassword);
-        peopleRepository.save(person);
+    public void register(UserOrg userOrg){
+        userOrg.setRole("ROLE_USER");
+        userOrg.setGln(1111111111111L);
+        String encodedPassword = passwordEncoder.encode(userOrg.getPassword()); //шифруем
+        userOrg.setPassword(encodedPassword);
+        usersRepository.save(userOrg);
     }
 }

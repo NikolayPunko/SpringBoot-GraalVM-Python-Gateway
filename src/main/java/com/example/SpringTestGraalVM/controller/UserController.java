@@ -1,8 +1,8 @@
 package com.example.SpringTestGraalVM.controller;
 
-import com.example.SpringTestGraalVM.dto.UserProfileDTO;
-import com.example.SpringTestGraalVM.model.Person;
-import com.example.SpringTestGraalVM.security.PersonDetails;
+import com.example.SpringTestGraalVM.dto.UserOrgProfileDTO;
+import com.example.SpringTestGraalVM.model.UserOrg;
+import com.example.SpringTestGraalVM.security.UserOrgDetails;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @GetMapping("/profile")
-    public ResponseEntity<UserProfileDTO> getUserProfile() {
+    public ResponseEntity<UserOrgProfileDTO> getUserProfile() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
-        return ResponseEntity.ok(convertToUserProfileDTO(personDetails.getPerson()));
+        UserOrgDetails userOrgDetails = (UserOrgDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(convertToUserProfileDTO(userOrgDetails.getPerson()));
     }
 
-    private UserProfileDTO convertToUserProfileDTO(Person person) {
-        return new ModelMapper().map(person, UserProfileDTO.class);
+    private UserOrgProfileDTO convertToUserProfileDTO(UserOrg userOrg) {
+        return new ModelMapper().map(userOrg, UserOrgProfileDTO.class);
     }
 
 }

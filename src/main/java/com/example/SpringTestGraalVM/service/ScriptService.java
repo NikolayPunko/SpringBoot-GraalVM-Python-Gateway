@@ -1,6 +1,6 @@
 package com.example.SpringTestGraalVM.service;
 
-import com.example.SpringTestGraalVM.model.Person;
+import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.model.ScriptContext;
 import com.example.SpringTestGraalVM.pool.ContextPool;
 import com.example.SpringTestGraalVM.scriptConfiguration.PythonConfiguration;
@@ -35,7 +35,7 @@ public class ScriptService {
 
     public String getMethod3() {
         ScriptContext context = ContextPool.borrowContext();
-        String result = PythonConfiguration.getPythonService(context).testMethod_3(new Person("Ivan", "ivan@mail.ru"));
+        String result = PythonConfiguration.getPythonService(context).testMethod_3(new UserOrg("Ivan", "ivan@mail.ru"));
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
@@ -45,9 +45,9 @@ public class ScriptService {
         return result;
     }
 
-    public Person getMethod4() {
+    public UserOrg getMethod4() {
         ScriptContext context = ContextPool.borrowContext();
-        Person result = PythonConfiguration.getPythonService(context).testMethod_4(new Person("Ivan", "ivan@mail.ru"));
+        UserOrg result = PythonConfiguration.getPythonService(context).testMethod_4(new UserOrg("Ivan", "ivan@mail.ru"));
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {

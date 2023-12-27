@@ -1,5 +1,5 @@
 package com.example.SpringTestGraalVM.controller;
-import com.example.SpringTestGraalVM.model.Person;
+import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.scriptConfiguration.PythonConfiguration;
 import com.example.SpringTestGraalVM.service.ScriptService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +40,7 @@ public class ScriptController {
     }
 
     @GetMapping("/method4")
-    public Person testMethod4() {
+    public UserOrg testMethod4() {
         return scriptService.getMethod4();
     }
 

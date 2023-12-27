@@ -1,6 +1,6 @@
 package com.example.SpringTestGraalVM.security;
 
-import com.example.SpringTestGraalVM.model.Person;
+import com.example.SpringTestGraalVM.model.UserOrg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,29 +10,29 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-public class PersonDetails implements UserDetails {
+public class UserOrgDetails implements UserDetails {
 
-    private final Person person;
+    private final UserOrg userOrg;
 
     @Autowired
-    public PersonDetails(Person person) {
-        this.person = person;
+    public UserOrgDetails(UserOrg userOrg) {
+        this.userOrg = userOrg;
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(person.getRole()));
+        return Collections.singletonList(new SimpleGrantedAuthority(userOrg.getRole()));
     }
 
     @Override
     public String getPassword() {
-        return this.person.getPassword();
+        return this.userOrg.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.person.getUsername();
+        return this.userOrg.getUsername();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class PersonDetails implements UserDetails {
         return true;
     }
 
-    public Person getPerson(){
-        return this.person;
+    public UserOrg getPerson(){
+        return this.userOrg;
     }
 }

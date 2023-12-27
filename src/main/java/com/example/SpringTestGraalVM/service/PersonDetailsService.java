@@ -1,9 +1,9 @@
 package com.example.SpringTestGraalVM.service;
 
 import com.example.SpringTestGraalVM.exceptions.PersonNotFoundException;
-import com.example.SpringTestGraalVM.model.Person;
-import com.example.SpringTestGraalVM.repositories.PeopleRepository;
-import com.example.SpringTestGraalVM.security.PersonDetails;
+import com.example.SpringTestGraalVM.model.UserOrg;
+import com.example.SpringTestGraalVM.repositories.UsersRepository;
+import com.example.SpringTestGraalVM.security.UserOrgDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,21 +14,21 @@ import java.util.Optional;
 @Service
 public class PersonDetailsService implements UserDetailsService {
 
-    private final PeopleRepository peopleRepository;
+    private final UsersRepository usersRepository;
 
-    public PersonDetailsService(PeopleRepository peopleRepository) {
-        this.peopleRepository = peopleRepository;
+    public PersonDetailsService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Person> person = peopleRepository.findByUsername(username);
+        Optional<UserOrg> person = usersRepository.findByUsername(username);
 
         if (person.isEmpty()){
 //            throw new UsernameNotFoundException("Username not found!");
             throw new PersonNotFoundException();
         }
 
-        return new PersonDetails(person.get());
+        return new UserOrgDetails(person.get());
     }
 }

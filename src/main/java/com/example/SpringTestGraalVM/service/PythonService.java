@@ -1,6 +1,6 @@
 package com.example.SpringTestGraalVM.service;
 
-import com.example.SpringTestGraalVM.model.Person;
+import com.example.SpringTestGraalVM.model.UserOrg;
 
 public interface PythonService {
 
@@ -8,9 +8,9 @@ public interface PythonService {
 
     String testMethod_2();
 
-    String testMethod_3(Person person);
+    String testMethod_3(UserOrg userOrg);
 
-    Person testMethod_4(Person person);
+    UserOrg testMethod_4(UserOrg userOrg);
 
     void pythonConstructor();
 
