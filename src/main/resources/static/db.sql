@@ -39,7 +39,7 @@ create table BD_EDOC(
                         DTDOC timestamp NOT NULL ,
                         RECEIVER numeric(13,0) NULL ,
                         SENDER numeric(13,0) NULL ,
-                        DOC varchar NULL ,
+                        DOC text NULL ,
                         ID numeric(12,0) NOT NULL DEFAULT (0),
                         DTINS timestamp NULL ,
                         DTUPD timestamp NULL
@@ -49,4 +49,5 @@ drop table BD_EDOC;
 
 SELECT * FROM BD_EDOC;
 
-INSERT INTO BD_EDOC(User_id, F_TM, DTDOC) VALUES (5, '1899-12-30T00:00:00', '1899-12-30T00:00:00');
+INSERT INTO BD_EDOC(User_id, F_TM, DTDOC, RECEIVER, SENDER ) VALUES (5, '1899-12-30T00:00:00', '1899-12-30T00:00:00', 1111111111111, 1111111111111);
+
