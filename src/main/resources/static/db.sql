@@ -7,9 +7,10 @@ create table User_org(
                          GLN numeric(13,0) NOT NULL
 );
 
+INSERT INTO User_org(username, email, password, role, GLN) VALUES ('user', 'user@mail.ru', '$2a$10$1zViA2sSYKVimgCJmCEg3uccihxpLc..TRyGjTwctQ0UPXgX6Ayz2', 'ROLE_USER', 1111111111111);
+INSERT INTO User_org(username, email, password, role, GLN) VALUES ('savushkin', 'savushkin@mail.ru', '$2a$10$n0Dm4kF3FGilgtfq//POveoRc7fR6hmogW482ifDNKEZ4uDLYMW4W', 'ROLE_USER', 4810268900006);
 
-
-INSERT INTO User_org(username, email, password, role, GLN) VALUES ('user', 'user@mail.ru', '$2a$10$DpWWTJyZFQ7XuAVBlb5YXOPtJEc8QNqWI1/SF3Vhe87Z4Mhiy4uCy', 'ROLE_USER', 1111111111111);
+delete from User_org where username = 'user'
 
 SELECT * FROM User_org;
 

@@ -1,10 +1,13 @@
 package com.example.SpringTestGraalVM.controller;
 
+import com.example.SpringTestGraalVM.dto.LoginResponseDTO;
+import com.example.SpringTestGraalVM.dto.PricatImportResponseDTO;
 import com.example.SpringTestGraalVM.dto.PricatResponseDTO;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.service.PricatService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,8 +38,9 @@ public class PricatController {
 //    }
 
     @PostMapping("/import/PRICAT/Xml")
-    public void importPricat(@RequestParam("xml") MultipartFile file){
-        pricatService.importPricat(file);
+    public ResponseEntity<PricatImportResponseDTO> importPricat(@RequestParam("xml") MultipartFile file){
+        long id = pricatService.importPricat(file);
+        return ResponseEntity.ok(new PricatImportResponseDTO(id));
     }
 
     @GetMapping("/PRICAT/send/ID")

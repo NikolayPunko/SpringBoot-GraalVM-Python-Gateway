@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -51,7 +52,7 @@ public class Pricat {
     private Date DT;
 
     @Column(name = "DTDOC")
-    private Date DTDOC;
+    private LocalDate DTDOC;
 
     @Column(name = "RECEIVER")
     private long RECEIVER;
@@ -72,5 +73,26 @@ public class Pricat {
     private Date DTUPD;
 
 
-
+    @Override
+    public String toString() {
+        return "Pricat{" +
+                "F_GUID=" + F_GUID +
+                ", owner=" + owner +
+                ", F_ID=" + F_ID +
+                ", F_TM=" + F_TM +
+                ", F_DEL=" + F_DEL +
+                ", EDI='" + EDI + '\'' +
+                ", TP='" + TP + '\'' +
+                ", PST='" + PST + '\'' +
+                ", NDE='" + NDE + '\'' +
+                ", DT=" + DT +
+                ", DTDOC=" + DTDOC +
+                ", RECEIVER=" + RECEIVER +
+                ", SENDER=" + SENDER +
+                ", DOC='" + DOC + '\'' +
+                ", ID=" + ID +
+                ", DTINS=" + DTINS +
+                ", DTUPD=" + DTUPD +
+                '}';
+    }
 }

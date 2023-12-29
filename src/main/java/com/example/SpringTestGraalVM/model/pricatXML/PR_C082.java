@@ -16,4 +16,11 @@ public class PR_C082 {
 
     @JacksonXmlProperty(localName = "E3039")
     private String pr_e3039;
+
+    @Override
+    public String toString() {
+        return "PR_C082{" +
+                "pr_e3039='" + pr_e3039 + '\'' +
+                '}';
+    }
 }
