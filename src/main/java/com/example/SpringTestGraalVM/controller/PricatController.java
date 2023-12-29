@@ -1,6 +1,5 @@
 package com.example.SpringTestGraalVM.controller;
 
-import com.example.SpringTestGraalVM.dto.LoginResponseDTO;
 import com.example.SpringTestGraalVM.dto.PricatImportResponseDTO;
 import com.example.SpringTestGraalVM.dto.PricatResponseDTO;
 import com.example.SpringTestGraalVM.model.Pricat;
@@ -25,19 +24,13 @@ public class PricatController {
         this.pricatService = pricatService;
     }
 
-    @GetMapping("/pricat")
+    @GetMapping("/pricats")
     public List<PricatResponseDTO> getPricats(){
         return pricatService.findAll().stream().map(x -> convertToPricatResponseDTO(x)).collect(Collectors.toList());
     }
 
-//    @PostMapping("/import/PRICAT/zipWithXml")
-//    public void importPricat(@RequestParam("file[0]") MultipartFile file){
-//        System.out.println(file.getOriginalFilename());
-//        System.out.println(file.getContentType());
-//
-//    }
 
-    @PostMapping("/import/PRICAT/Xml")
+    @PostMapping(value = "/import/PRICAT/Xml")
     public ResponseEntity<PricatImportResponseDTO> importPricat(@RequestParam("xml") MultipartFile file){
         long id = pricatService.importPricat(file);
         return ResponseEntity.ok(new PricatImportResponseDTO(id));
@@ -53,10 +46,11 @@ public class PricatController {
 
     }
 
-    @GetMapping("/PRICAT/{documentId}") //Чтение документа
-    public void getPricatById(){
-
+    @GetMapping("/PRICAT/{documentId}")
+    public ResponseEntity<String> getPricatById(@PathVariable int documentId){
+        return ResponseEntity.ok(pricatService.findPricatById(documentId));
     }
+
 
     private PricatResponseDTO convertToPricatResponseDTO(Pricat pricat) {
         return new ModelMapper().map(pricat, PricatResponseDTO.class);

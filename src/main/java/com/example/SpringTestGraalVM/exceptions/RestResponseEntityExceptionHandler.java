@@ -45,5 +45,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 response, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler({ PricatNotFoundException.class })
+    public ResponseEntity<AppError> handlePricatNotFoundException(Exception ex, WebRequest request) {
+
+        AppError response = new AppError("PricatNotFoundException");
+        return new ResponseEntity<AppError>(
+                response, HttpStatus.NOT_FOUND);
+    }
+
 
 }

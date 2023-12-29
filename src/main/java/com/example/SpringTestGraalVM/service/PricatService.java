@@ -1,5 +1,6 @@
 package com.example.SpringTestGraalVM.service;
 
+import com.example.SpringTestGraalVM.exceptions.PricatNotFoundException;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.model.pricatXML.PricatXML;
@@ -19,9 +20,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
 
-import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 
 @Service
 @Transactional(readOnly = true)
@@ -74,6 +74,13 @@ public class PricatService {
     public void save(Pricat pricat) {
         pricatRepository.save(pricat);
     }
+
+    public String findPricatById(int id){
+        Optional<Pricat> findPricat = pricatRepository.findById(id);
+        Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
+        return pricat.getDOC();
+    }
+
 
     private String convertXMLtoString(MultipartFile file) {
         String str = null;
