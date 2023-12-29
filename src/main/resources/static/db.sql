@@ -45,7 +45,7 @@ create table BD_EDOC(
                         DTUPD timestamp NULL
 );
 
-drop table BD_EDOC;
+--drop table BD_EDOC;
 
 SELECT * FROM BD_EDOC;
 

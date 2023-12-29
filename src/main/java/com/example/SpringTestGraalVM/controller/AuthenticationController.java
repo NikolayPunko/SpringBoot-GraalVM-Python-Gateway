@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/authentication")
 public class AuthenticationController {
 
     private final UserOrgValidator userOrgValidator;
