@@ -59,8 +59,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.POST, "/auth/authenticate").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/auth/registration").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/authentication/authenticate").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/authentication/registration").permitAll()
                                 .requestMatchers("/py/test").permitAll()
 //                                .requestMatchers( "/py/**").permitAll()
                                 .anyRequest().authenticated()
