@@ -61,7 +61,7 @@ public class PricatController {
 
     private static PricatResponseDTO convertPricatToPricatResponseDTO(Pricat pricat){
         PricatResponseDTO responseDTO = new PricatResponseDTO();
-        responseDTO.setDocumentId(pricat.getF_ID());
+        responseDTO.setDocumentId(pricat.getF_GUID());
         responseDTO.setDateTime(pricat.getDT());
         responseDTO.setDateTimeInsert(pricat.getDTINS());
         responseDTO.setDateTimeUpdate(pricat.getDTUPD());

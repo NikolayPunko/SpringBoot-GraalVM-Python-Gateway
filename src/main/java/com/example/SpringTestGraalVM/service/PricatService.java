@@ -86,7 +86,6 @@ public class PricatService {
     }
 
     public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size){
-//        System.out.println(filterDTO);
         Pageable pageable = PageRequest.of(page-1, size);
         return pricatRepository.findByPSTAndDTDOCBetweenAndNDE(state, filterDTO.getDocumentDateStart(),
                 filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
