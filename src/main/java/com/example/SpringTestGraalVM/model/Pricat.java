@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -31,7 +33,7 @@ public class Pricat {
     private long F_ID;
 
     @Column(name = "F_TM")
-    private Date F_TM;
+    private LocalDateTime F_TM;
 
     @Column(name = "F_DEL")
     private int F_DEL;
@@ -48,11 +50,13 @@ public class Pricat {
     @Column(name = "NDE")
     private String NDE;
 
+    @DateTimeFormat(pattern = "yyyyMMdd[ [HH][:mm][:ss][.SSS]]")  //разобраться с преобразованием из БД
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DT")
-    private Date DT;
+    private LocalDateTime DT;
 
     @Column(name = "DTDOC")
-    private LocalDate DTDOC;
+    private LocalDateTime DTDOC;
 
     @Column(name = "RECEIVER")
     private long RECEIVER;
@@ -67,10 +71,10 @@ public class Pricat {
     private long ID;
 
     @Column(name = "DTINS")
-    private Date DTINS;
+    private LocalDateTime DTINS;
 
     @Column(name = "DTUPD")
-    private Date DTUPD;
+    private LocalDateTime DTUPD;
 
 
     @Override

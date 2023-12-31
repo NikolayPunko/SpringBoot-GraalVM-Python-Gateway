@@ -1,5 +1,7 @@
 package com.example.SpringTestGraalVM.service;
 
+import com.example.SpringTestGraalVM.dto.PricatFilterRequestDTO;
+import com.example.SpringTestGraalVM.dto.PricatResponseDTO;
 import com.example.SpringTestGraalVM.exceptions.PricatNotFoundException;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.model.UserOrg;
@@ -13,12 +15,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,19 +56,19 @@ public class PricatService {
         Pricat pricat = new Pricat();
 
         pricat.setOwner(getUserOrgDetails());
-        pricat.setF_TM(new Date());
+        pricat.setF_TM(LocalDateTime.now());
 //        pricat.setF_DEL(0);
         pricat.setEDI("001");
         pricat.setTP("PRICAT");
         pricat.setPST("IMPORTED");
         pricat.setNDE(pricatXML.getPr_bgm().getPr_s106().getPr_e1004());
-        pricat.setDT(new Date());
-        pricat.setDTDOC(LocalDate.parse(pricatXML.getPr_dtm().getPr_c507().getPr_e2380(), DateTimeFormatter.ofPattern("yyyyMMdd")));
+        pricat.setDT(LocalDateTime.now());
+        pricat.setDTDOC(LocalDateTime.parse(pricatXML.getPr_dtm().getPr_c507().getPr_e2380(), DATE_FORMAT));
         pricat.setRECEIVER(Long.parseLong(pricatXML.getPr_SG2_list().get(0).getPr_nad().getPr_c082().getPr_e3039()));
         pricat.setSENDER(Long.parseLong(pricatXML.getPr_SG2_list().get(1).getPr_nad().getPr_c082().getPr_e3039()));
         pricat.setDOC(convertXMLtoString(file));
-//        pricat.setDTINS(new Date());
-//        pricat.setDTUPD(new Date());
+//        pricat.setDTINS(LocalDateTime.now());
+//        pricat.setDTUPD(LocalDateTime.now());
 
         save(pricat);
         return pricat.getF_GUID();
@@ -79,6 +83,13 @@ public class PricatService {
         Optional<Pricat> findPricat = pricatRepository.findById(id);
         Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
         return pricat.getDOC();
+    }
+
+    public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size){
+//        System.out.println(filterDTO);
+        Pageable pageable = PageRequest.of(page-1, size);
+        return pricatRepository.findByPSTAndDTDOCBetweenAndNDE(state, filterDTO.getDocumentDateStart(),
+                filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
     }
 
 
@@ -98,12 +109,11 @@ public class PricatService {
         return userOrgDetails.getPerson();
     }
 
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        FileOutputStream outputStream = new FileOutputStream(new File(file.getOriginalFilename()));
-        outputStream.write(file.getBytes());
-        outputStream.close();
-        return convFile;
-    }
+    private static DateTimeFormatter DATE_FORMAT =   new DateTimeFormatterBuilder().appendPattern("yyyyMMdd[ [HH][:mm][:ss][.SSS]]")
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+            .toFormatter();
+
 
 }

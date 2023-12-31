@@ -1,9 +1,12 @@
 package com.example.SpringTestGraalVM.controller;
 
+import com.example.SpringTestGraalVM.dto.PricatFilterRequestDTO;
 import com.example.SpringTestGraalVM.dto.PricatImportResponseDTO;
 import com.example.SpringTestGraalVM.dto.PricatResponseDTO;
+import com.example.SpringTestGraalVM.dto.UserOrgDTO;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.service.PricatService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,7 @@ public class PricatController {
 
     @GetMapping("/pricats")
     public List<PricatResponseDTO> getPricats(){
-        return pricatService.findAll().stream().map(x -> convertToPricatResponseDTO(x)).collect(Collectors.toList());
+        return pricatService.findAll().stream().map(x -> convertPricatToPricatResponseDTO(x)).collect(Collectors.toList());
     }
 
 
@@ -41,9 +44,13 @@ public class PricatController {
 
     }
 
-    @PostMapping("/PRICAT/{documentState}/list") //Чтение списка документов
-    public void getPricatByState(){
-
+    @PostMapping("/PRICAT/{documentState}/list")
+    public ResponseEntity<List<PricatResponseDTO>> getPricatByState(@PathVariable String documentState,
+                                                    @RequestParam(value = "page", defaultValue = "1") int page,
+                                                    @RequestParam(value = "size", defaultValue = "20") int size,
+                                                    @RequestBody @Valid PricatFilterRequestDTO filterDTO){
+        return ResponseEntity.ok(pricatService.findPricatByState(documentState, filterDTO, page, size)
+                .stream().map(x -> convertPricatToPricatResponseDTO(x)).collect(Collectors.toList()));
     }
 
     @GetMapping("/PRICAT/{documentId}")
@@ -52,7 +59,19 @@ public class PricatController {
     }
 
 
-    private PricatResponseDTO convertToPricatResponseDTO(Pricat pricat) {
-        return new ModelMapper().map(pricat, PricatResponseDTO.class);
+    private static PricatResponseDTO convertPricatToPricatResponseDTO(Pricat pricat){
+        PricatResponseDTO responseDTO = new PricatResponseDTO();
+        responseDTO.setDocumentId(pricat.getF_ID());
+        responseDTO.setDateTime(pricat.getDT());
+        responseDTO.setDateTimeInsert(pricat.getDTINS());
+        responseDTO.setDateTimeUpdate(pricat.getDTUPD());
+        responseDTO.setDocumentDate(pricat.getDTDOC());
+        responseDTO.setEdi(pricat.getEDI());
+        responseDTO.setDocumentType(pricat.getTP());
+        responseDTO.setDocumentStatus(pricat.getPST());
+        responseDTO.setDocumentNumber(pricat.getNDE());
+        responseDTO.setSenderId(pricat.getSENDER());
+        responseDTO.setReceiverId(pricat.getRECEIVER());
+        return responseDTO;
     }
 }
