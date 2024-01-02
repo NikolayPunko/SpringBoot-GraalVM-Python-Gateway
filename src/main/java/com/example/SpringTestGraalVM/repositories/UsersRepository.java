@@ -11,4 +11,6 @@ public interface UsersRepository extends JpaRepository<UserOrg, Integer> {
 
     Optional<UserOrg> findByUsername(String username);
 
+    Optional<UserOrg> findByGln(long gln);
+
 }

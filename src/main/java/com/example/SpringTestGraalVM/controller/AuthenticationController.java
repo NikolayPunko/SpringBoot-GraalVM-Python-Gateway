@@ -3,7 +3,7 @@ package com.example.SpringTestGraalVM.controller;
 import com.example.SpringTestGraalVM.dto.LoginRequestDTO;
 import com.example.SpringTestGraalVM.dto.LoginResponseDTO;
 import com.example.SpringTestGraalVM.dto.UserOrgDTO;
-import com.example.SpringTestGraalVM.exceptions.PersonNotCreatedException;
+import com.example.SpringTestGraalVM.exceptions.UserOrgNotCreatedException;
 import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.security.JWTUtil;
 import com.example.SpringTestGraalVM.service.PersonDetailsService;
@@ -72,7 +72,7 @@ public class AuthenticationController {
                         .append(";");
             }
 
-            throw new PersonNotCreatedException(errorMessage.toString());
+            throw new UserOrgNotCreatedException(errorMessage.toString());
         }
 
         registrationService.register(userOrg);

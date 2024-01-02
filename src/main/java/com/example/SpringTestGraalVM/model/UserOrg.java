@@ -42,8 +42,6 @@ public class UserOrg {
     @Column(name = "gln")
     private long gln;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Pricat> pricatList;
     public UserOrg() {
 
     }
@@ -66,13 +64,6 @@ public class UserOrg {
         this.gln = gln;
     }
 
-    public UserOrg(String username, String email, String password, long gln, List<Pricat> pricatList) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.gln = gln;
-        this.pricatList = pricatList;
-    }
 
     @Override
     public String toString() {

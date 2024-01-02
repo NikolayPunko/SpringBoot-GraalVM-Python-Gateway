@@ -22,21 +22,20 @@ public class Pricat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "F_GUID")
-    private long F_GUID;
+    private long FGUID;
 
-    @ManyToOne()
-    @JoinColumn(name = "User_id", referencedColumnName = "id")
-    private UserOrg owner;
+    @Column(name = "User_id")
+    private int USERID;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "F_ID")
-    private long F_ID;
+    private long FID;
 
     @Column(name = "F_TM")
-    private LocalDateTime F_TM;
+    private LocalDateTime FTM;
 
     @Column(name = "F_DEL")
-    private int F_DEL;
+    private int FDEL;
 
     @Column(name = "EDI")
     private String EDI;
@@ -76,15 +75,34 @@ public class Pricat {
     @Column(name = "DTUPD")
     private LocalDateTime DTUPD;
 
+    public Pricat(Pricat pricat) {
+//        this.FGUID = pricat.getFGUID();
+//        this.USERID = pricat.getUSERID();
+        this.FID = pricat.getFID();
+        this.FTM = pricat.getFTM();
+        this.FDEL = pricat.getFDEL();
+        this.EDI = pricat.getEDI();
+        this.TP = pricat.getTP();
+        this.PST = pricat.getPST();
+        this.NDE = pricat.getNDE();
+        this.DT = pricat.getDT();
+        this.DTDOC = pricat.getDTDOC();
+        this.RECEIVER = pricat.getRECEIVER();
+        this.SENDER = pricat.getSENDER();
+        this.DOC = pricat.getDOC();
+        this.ID = pricat.getID();
+        this.DTINS = pricat.getDTINS();
+        this.DTUPD = pricat.getDTUPD();
+    }
 
     @Override
     public String toString() {
         return "Pricat{" +
-                "F_GUID=" + F_GUID +
-                ", owner=" + owner +
-                ", F_ID=" + F_ID +
-                ", F_TM=" + F_TM +
-                ", F_DEL=" + F_DEL +
+                "F_GUID=" + FGUID +
+                ", User_id=" + USERID +
+                ", F_ID=" + FID +
+                ", F_TM=" + FTM +
+                ", F_DEL=" + FDEL +
                 ", EDI='" + EDI + '\'' +
                 ", TP='" + TP + '\'' +
                 ", PST='" + PST + '\'' +

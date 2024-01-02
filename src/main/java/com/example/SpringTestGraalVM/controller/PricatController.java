@@ -9,11 +9,14 @@ import com.example.SpringTestGraalVM.service.PricatService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,9 +42,10 @@ public class PricatController {
         return ResponseEntity.ok(new PricatImportResponseDTO(id));
     }
 
-    @GetMapping("/PRICAT/send/ID")
-    public void sendPricat(){
-
+    @GetMapping("/PRICAT/send/{id}")
+    public ResponseEntity<Map> sendPricat(@PathVariable("id") long id){
+        pricatService.sendPricat(id);
+        return ResponseEntity.ok(Map.of("successful","true"));
     }
 
     @PostMapping("/PRICAT/{documentState}/list")
@@ -61,7 +65,7 @@ public class PricatController {
 
     private static PricatResponseDTO convertPricatToPricatResponseDTO(Pricat pricat){
         PricatResponseDTO responseDTO = new PricatResponseDTO();
-        responseDTO.setDocumentId(pricat.getF_GUID());
+        responseDTO.setDocumentId(pricat.getFGUID());
         responseDTO.setDateTime(pricat.getDT());
         responseDTO.setDateTimeInsert(pricat.getDTINS());
         responseDTO.setDateTimeUpdate(pricat.getDTUPD());

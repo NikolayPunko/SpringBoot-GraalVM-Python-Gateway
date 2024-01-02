@@ -1,12 +1,13 @@
 package com.example.SpringTestGraalVM.service;
 
 import com.example.SpringTestGraalVM.dto.PricatFilterRequestDTO;
-import com.example.SpringTestGraalVM.dto.PricatResponseDTO;
+import com.example.SpringTestGraalVM.exceptions.UserOrgNotFoundException;
 import com.example.SpringTestGraalVM.exceptions.PricatNotFoundException;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.model.pricatXML.PricatXML;
 import com.example.SpringTestGraalVM.repositories.PricatRepository;
+import com.example.SpringTestGraalVM.repositories.UsersRepository;
 import com.example.SpringTestGraalVM.security.UserOrgDetails;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,12 @@ import java.util.Optional;
 public class PricatService {
 
     private final PricatRepository pricatRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    public PricatService(PricatRepository pricatRepository) {
+    public PricatService(PricatRepository pricatRepository, UsersRepository usersRepository) {
         this.pricatRepository = pricatRepository;
+        this.usersRepository = usersRepository;
     }
 
     public List<Pricat> findAll() {
@@ -55,8 +58,8 @@ public class PricatService {
 
         Pricat pricat = new Pricat();
 
-        pricat.setOwner(getUserOrgDetails());
-        pricat.setF_TM(LocalDateTime.now());
+        pricat.setUSERID(getUserOrgDetails().getId());
+        pricat.setFTM(LocalDateTime.now());
 //        pricat.setF_DEL(0);
         pricat.setEDI("001");
         pricat.setTP("PRICAT");
@@ -67,11 +70,11 @@ public class PricatService {
         pricat.setRECEIVER(Long.parseLong(pricatXML.getPr_SG2_list().get(0).getPr_nad().getPr_c082().getPr_e3039()));
         pricat.setSENDER(Long.parseLong(pricatXML.getPr_SG2_list().get(1).getPr_nad().getPr_c082().getPr_e3039()));
         pricat.setDOC(convertXMLtoString(file));
-//        pricat.setDTINS(LocalDateTime.now());
-//        pricat.setDTUPD(LocalDateTime.now());
+        pricat.setDTINS(LocalDateTime.now());
+        pricat.setDTUPD(LocalDateTime.now());
 
         save(pricat);
-        return pricat.getF_GUID();
+        return pricat.getFGUID();
     }
 
     @Transactional
@@ -79,7 +82,7 @@ public class PricatService {
         pricatRepository.save(pricat);
     }
 
-    public String findPricatById(int id){
+    public String findPricatById(long id){
         Optional<Pricat> findPricat = pricatRepository.findById(id);
         Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
         return pricat.getDOC();
@@ -89,6 +92,28 @@ public class PricatService {
         Pageable pageable = PageRequest.of(page-1, size);
         return pricatRepository.findByPSTAndDTDOCBetweenAndNDE(state, filterDTO.getDocumentDateStart(),
                 filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
+    }
+
+    @Transactional
+    public void sendPricat(long id){
+        Pricat pricat = pricatRepository.findByFGUIDAndUSERIDAndSENDER(id, getUserOrgDetails().getId(), getUserOrgDetails().getGln())
+                .orElseThrow(PricatNotFoundException::new);
+
+        UserOrg userOrgOpt = usersRepository.findByGln(pricat.getRECEIVER())
+                .orElseThrow(UserOrgNotFoundException::new);
+
+        Pricat copyPricat = new Pricat(pricat);
+
+        copyPricat.setUSERID(userOrgOpt.getId());
+        copyPricat.setPST("TRANSFERRED");
+        copyPricat.setDTINS(LocalDateTime.now());
+        copyPricat.setDTUPD(LocalDateTime.now());
+
+        pricat.setPST("TRANSFERRED");
+        pricat.setDTUPD(LocalDateTime.now());
+
+        save(pricat);
+        save(copyPricat);
     }
 
 

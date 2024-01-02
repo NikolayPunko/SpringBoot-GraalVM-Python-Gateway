@@ -21,10 +21,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 response, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({ PersonNotFoundException.class })
-    public ResponseEntity<AppError> handlePersonNotFoundException(Exception ex, WebRequest request) {
+    @ExceptionHandler({ UserOrgNotFoundException.class })
+    public ResponseEntity<AppError> handleUserOrgNotFoundException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("PersonNotFoundException");
+        AppError response = new AppError("UserOrgNotFoundException");
         return new ResponseEntity<AppError>(
                 response, HttpStatus.NOT_FOUND);
     }
@@ -37,10 +37,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 response, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({ PersonNotCreatedException.class })
-    public ResponseEntity<AppError> handlePersonNotCreatedException(Exception ex, WebRequest request) {
+    @ExceptionHandler({ UserOrgNotCreatedException.class })
+    public ResponseEntity<AppError> handleUserOrgNotCreatedException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("PersonNotCreatedException; " + ex.getMessage());
+        AppError response = new AppError("UserOrgNotCreatedException; " + ex.getMessage());
         return new ResponseEntity<AppError>(
                 response, HttpStatus.UNAUTHORIZED);
     }

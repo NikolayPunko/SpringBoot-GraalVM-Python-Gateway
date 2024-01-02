@@ -1,6 +1,6 @@
 package com.example.SpringTestGraalVM.service;
 
-import com.example.SpringTestGraalVM.exceptions.PersonNotFoundException;
+import com.example.SpringTestGraalVM.exceptions.UserOrgNotFoundException;
 import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.repositories.UsersRepository;
 import com.example.SpringTestGraalVM.security.UserOrgDetails;
@@ -26,7 +26,7 @@ public class PersonDetailsService implements UserDetailsService {
 
         if (person.isEmpty()){
 //            throw new UsernameNotFoundException("Username not found!");
-            throw new PersonNotFoundException();
+            throw new UserOrgNotFoundException();
         }
 
         return new UserOrgDetails(person.get());
