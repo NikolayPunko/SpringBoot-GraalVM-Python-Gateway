@@ -78,4 +78,5 @@ public class PricatController {
         responseDTO.setReceiverId(pricat.getRECEIVER());
         return responseDTO;
     }
+
 }

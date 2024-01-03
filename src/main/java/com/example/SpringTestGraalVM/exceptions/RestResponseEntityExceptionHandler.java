@@ -53,5 +53,12 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({ XMLParsingException.class })
+    public ResponseEntity<AppError> handleXMLParsingException(Exception ex, WebRequest request) {
+
+        AppError response = new AppError("XMLParsingException");
+        return new ResponseEntity<AppError>(
+                response, HttpStatus.BAD_REQUEST);
+    }
 
 }

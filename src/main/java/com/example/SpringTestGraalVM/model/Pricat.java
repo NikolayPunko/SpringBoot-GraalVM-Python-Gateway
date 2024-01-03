@@ -27,8 +27,6 @@ public class Pricat {
     @Column(name = "User_id")
     private int USERID;
 
-
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "F_ID")
     private long FID;
 

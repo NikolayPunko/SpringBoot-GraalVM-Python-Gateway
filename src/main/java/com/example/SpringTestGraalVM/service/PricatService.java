@@ -3,6 +3,7 @@ package com.example.SpringTestGraalVM.service;
 import com.example.SpringTestGraalVM.dto.PricatFilterRequestDTO;
 import com.example.SpringTestGraalVM.exceptions.UserOrgNotFoundException;
 import com.example.SpringTestGraalVM.exceptions.PricatNotFoundException;
+import com.example.SpringTestGraalVM.exceptions.XMLParsingException;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.model.pricatXML.PricatXML;
@@ -10,6 +11,7 @@ import com.example.SpringTestGraalVM.repositories.PricatRepository;
 import com.example.SpringTestGraalVM.repositories.UsersRepository;
 import com.example.SpringTestGraalVM.security.UserOrgDetails;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.postgresql.util.ReaderInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +34,8 @@ import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,16 +56,7 @@ public class PricatService {
 
     @Transactional
     public long importPricat(MultipartFile file) {
-        XmlMapper xmlMapper = new XmlMapper();
-
-        PricatXML pricatXML = null;
-        try {
-            pricatXML = xmlMapper.readValue(file.getBytes(), PricatXML.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Pricat pricat = new Pricat();
+        Pricat pricat = parsingXMLtoPricat(trimXML(convertXMLtoString(file)), new Pricat());
 
         pricat.setUSERID(getUserOrgDetails().getId());
         pricat.setFTM(LocalDateTime.now());
@@ -64,12 +64,7 @@ public class PricatService {
         pricat.setEDI("001");
         pricat.setTP("PRICAT");
         pricat.setPST("IMPORTED");
-        pricat.setNDE(pricatXML.getPr_bgm().getPr_s106().getPr_e1004());
         pricat.setDT(LocalDateTime.now());
-        pricat.setDTDOC(LocalDateTime.parse(pricatXML.getPr_dtm().getPr_c507().getPr_e2380(), DATE_FORMAT));
-        pricat.setRECEIVER(Long.parseLong(pricatXML.getPr_SG2_list().get(0).getPr_nad().getPr_c082().getPr_e3039()));
-        pricat.setSENDER(Long.parseLong(pricatXML.getPr_SG2_list().get(1).getPr_nad().getPr_c082().getPr_e3039()));
-        pricat.setDOC(convertXMLtoString(file));
         pricat.setDTINS(LocalDateTime.now());
         pricat.setDTUPD(LocalDateTime.now());
 
@@ -85,6 +80,7 @@ public class PricatService {
     public String findPricatById(long id){
         Optional<Pricat> findPricat = pricatRepository.findById(id);
         Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
+        System.out.println(pricat.getFID());
         return pricat.getDOC();
     }
 
@@ -116,6 +112,55 @@ public class PricatService {
         save(copyPricat);
     }
 
+    public Pricat parsingXMLtoPricat(String xml, Pricat pricat){
+        try {
+            String NDE = "", DTDOC = "", RECEIVER = "", SENDER = "";
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+
+            NDE = document.getDocumentElement().getElementsByTagName("BGM").item(0).getChildNodes().item(1)
+                    .getChildNodes().item(0).getTextContent();
+
+            DTDOC = document.getDocumentElement().getElementsByTagName("DTM").item(0).getChildNodes().item(0)
+                    .getChildNodes().item(1).getTextContent();
+
+            NodeList SG2Elements = document.getDocumentElement().getElementsByTagName("SG2");
+            for (int i = 0; i < SG2Elements.getLength(); i++) {
+                Node node = SG2Elements.item(i).getChildNodes().item(0)
+                        .getChildNodes().item(0);
+                if(node.getNodeName().equals("E3035") && node.getTextContent().equals("BY")){
+                    RECEIVER = node.getParentNode().getChildNodes().item(1).getFirstChild().getTextContent();
+                } else if (node.getNodeName().equals("E3035") && node.getTextContent().equals("SU")) {
+                    SENDER = node.getParentNode().getChildNodes().item(1).getFirstChild().getTextContent();
+                }
+            }
+
+            pricat.setNDE(NDE);
+            pricat.setDTDOC(LocalDateTime.parse(DTDOC, DATE_FORMAT));
+            pricat.setRECEIVER(Long.parseLong(RECEIVER));
+            pricat.setSENDER(Long.parseLong(SENDER));
+            pricat.setDOC(xml);
+
+            return pricat;
+        } catch (Exception e) {
+            throw new XMLParsingException();
+        }
+    }
+
+    public static String trimXML(String input) {
+        BufferedReader reader = new BufferedReader(new StringReader(input));
+        StringBuffer result = new StringBuffer();
+        try {
+            String line;
+            while ( (line = reader.readLine() ) != null)
+                result.append(line.trim());
+            return result.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private String convertXMLtoString(MultipartFile file) {
         String str = null;
@@ -124,7 +169,7 @@ public class PricatService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return str.replaceAll("\\s+", "");
+        return str;
     }
 
     private UserOrg getUserOrgDetails(){
