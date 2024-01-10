@@ -78,21 +78,20 @@ public class PricatService {
     }
 
     public String findPricatById(long id){
-        Optional<Pricat> findPricat = pricatRepository.findById(id);
+        Optional<Pricat> findPricat = pricatRepository.findByFID(id);
         Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
-        System.out.println(pricat.getFID());
         return pricat.getDOC();
     }
 
     public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size){
         Pageable pageable = PageRequest.of(page-1, size);
-        return pricatRepository.findByPSTAndDTDOCBetweenAndNDE(state, filterDTO.getDocumentDateStart(),
+        return pricatRepository.findByPSTAndDTDOCBetweenAndNDEStartingWith(state, filterDTO.getDocumentDateStart(),
                 filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
     }
 
     @Transactional
     public void sendPricat(long id){
-        Pricat pricat = pricatRepository.findByFGUIDAndUSERIDAndSENDER(id, getUserOrgDetails().getId(), getUserOrgDetails().getGln())
+        Pricat pricat = pricatRepository.findByFIDAndUSERIDAndSENDER(id, getUserOrgDetails().getId(), getUserOrgDetails().getGln())
                 .orElseThrow(PricatNotFoundException::new);
 
         UserOrg userOrgOpt = usersRepository.findByGln(pricat.getRECEIVER())

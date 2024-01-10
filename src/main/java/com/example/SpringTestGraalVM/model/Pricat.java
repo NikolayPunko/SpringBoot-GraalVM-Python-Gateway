@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -27,7 +25,7 @@ public class Pricat {
     @Column(name = "User_id")
     private int USERID;
 
-    @Column(name = "F_ID")
+    @Column(name = "F_ID",insertable = false, updatable = false)
     private long FID;
 
     @Column(name = "F_TM")
