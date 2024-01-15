@@ -78,14 +78,14 @@ public class PricatService {
     }
 
     public String findPricatById(long id){
-        Optional<Pricat> findPricat = pricatRepository.findByFID(id);
+        Optional<Pricat> findPricat = pricatRepository.findByFID(id); //узнать про валидацию владельца документа
         Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
         return pricat.getDOC();
     }
 
     public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size){
         Pageable pageable = PageRequest.of(page-1, size);
-        return pricatRepository.findByPSTAndDTDOCBetweenAndNDEStartingWith(state, filterDTO.getDocumentDateStart(),
+        return pricatRepository.findByUSERIDAndPSTAndDTBetweenAndNDEStartingWith(getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
                 filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
     }
 

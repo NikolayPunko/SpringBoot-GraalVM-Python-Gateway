@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface PricatRepository extends JpaRepository<Pricat, Long> {
 
-    List<Pricat> findByPSTAndDTDOCBetweenAndNDEStartingWith(String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
+    List<Pricat> findByUSERIDAndPSTAndDTBetweenAndNDEStartingWith(int userId, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
 
     Optional<Pricat> findByFIDAndUSERIDAndSENDER( long id, int userId, long sender);
 
