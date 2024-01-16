@@ -10,8 +10,11 @@ create table User_org(
 INSERT INTO User_org(username, email, password, role, GLN) VALUES ('user', 'user@mail.ru', '$2a$10$1zViA2sSYKVimgCJmCEg3uccihxpLc..TRyGjTwctQ0UPXgX6Ayz2', 'ROLE_USER', 1111111111111);
 INSERT INTO User_org(username, email, password, role, GLN) VALUES ('savushkin', 'savushkin@mail.ru', '$2a$10$n0Dm4kF3FGilgtfq//POveoRc7fR6hmogW482ifDNKEZ4uDLYMW4W', 'ROLE_USER', 4810268900006);
 INSERT INTO User_org(username, email, password, role, GLN) VALUES ('santa', 'santa@mail.ru', '$2a$10$P1Hpux0FR8gYoqyh7ICS6uhxMjrdfJ041MKAe3.zqayJpk.FQDT9y', 'ROLE_USER', 4819003720008);
+INSERT INTO User_org(username, email, password, role, GLN) VALUES ('usertest2', 'usertest2@mail.ru', '$2a$10$sw48LF7jTSaxyJb0PwKZc.01IqVWSd74l/.UZiDmzrpAFiweIRvWW', 'ROLE_USER', 2222222222222);
 
-delete from User_org where username = 'user'
+
+
+--delete from User_org where username = 'user'
 
 SELECT * FROM User_org;
 
