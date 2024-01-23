@@ -6,13 +6,12 @@ import com.example.SpringTestGraalVM.exceptions.PricatNotFoundException;
 import com.example.SpringTestGraalVM.exceptions.XMLParsingException;
 import com.example.SpringTestGraalVM.model.Pricat;
 import com.example.SpringTestGraalVM.model.UserOrg;
-import com.example.SpringTestGraalVM.model.pricatXML.PricatXML;
 import com.example.SpringTestGraalVM.repositories.PricatRepository;
 import com.example.SpringTestGraalVM.repositories.UsersRepository;
 import com.example.SpringTestGraalVM.security.UserOrgDetails;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import org.postgresql.util.ReaderInputStream;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,10 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.*;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -44,10 +41,13 @@ public class PricatService {
     private final PricatRepository pricatRepository;
     private final UsersRepository usersRepository;
 
+    private final EntityManager entityManager;
+
     @Autowired
-    public PricatService(PricatRepository pricatRepository, UsersRepository usersRepository) {
+    public PricatService(PricatRepository pricatRepository, UsersRepository usersRepository, EntityManager entityManager) {
         this.pricatRepository = pricatRepository;
         this.usersRepository = usersRepository;
+        this.entityManager = entityManager;
     }
 
     public List<Pricat> findAll() {
@@ -69,12 +69,15 @@ public class PricatService {
         pricat.setDTUPD(LocalDateTime.now());
 
         save(pricat);
-        return pricat.getFGUID();
+        entityManager.refresh(pricat);
+
+        return pricat.getFID();
     }
 
+    @Modifying(clearAutomatically = true)
     @Transactional
     public void save(Pricat pricat) {
-        pricatRepository.save(pricat);
+        pricatRepository.saveAndFlush(pricat);
     }
 
     public String findPricatById(long id){

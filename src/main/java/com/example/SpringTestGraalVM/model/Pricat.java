@@ -108,7 +108,7 @@ public class Pricat {
                 ", DTDOC=" + DTDOC +
                 ", RECEIVER=" + RECEIVER +
                 ", SENDER=" + SENDER +
-                ", DOC='" + DOC + '\'' +
+//                ", DOC='" + DOC + '\'' +
                 ", ID=" + ID +
                 ", DTINS=" + DTINS +
                 ", DTUPD=" + DTUPD +

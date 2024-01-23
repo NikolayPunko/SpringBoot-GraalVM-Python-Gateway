@@ -20,4 +20,5 @@ public interface PricatRepository extends JpaRepository<Pricat, Long> {
     Optional<Pricat> findByFIDAndUSERIDAndSENDER( long id, int userId, long sender);
 
     Optional<Pricat> findByFID(long id);
+
 }
