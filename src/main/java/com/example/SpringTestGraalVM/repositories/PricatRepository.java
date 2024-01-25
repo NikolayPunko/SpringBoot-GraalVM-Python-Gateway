@@ -17,7 +17,7 @@ public interface PricatRepository extends JpaRepository<Pricat, Long> {
 
     List<Pricat> findByUSERIDAndPSTAndDTBetweenAndNDEStartingWith(int userId, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
 
-    Optional<Pricat> findByFIDAndUSERIDAndSENDER( long id, int userId, long sender);
+    Optional<Pricat> findByFIDAndUSERIDAndSENDERAndPST( long id, int userId, long sender, String pst);
 
     Optional<Pricat> findByFID(long id);
 
