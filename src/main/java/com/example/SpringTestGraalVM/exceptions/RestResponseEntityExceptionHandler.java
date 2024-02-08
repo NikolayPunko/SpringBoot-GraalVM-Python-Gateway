@@ -32,7 +32,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler({ BadCredentialsException.class })
     public ResponseEntity<AppError> handleBadCredentialsException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("BadCredentialsException");
+        AppError response = new AppError("BadCredentialsException; ");
         return new ResponseEntity<AppError>(
                 response, HttpStatus.UNAUTHORIZED);
     }
@@ -45,10 +45,18 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 response, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler({ UserOrgNotUpdatedException.class })
+    public ResponseEntity<AppError> handleUserOrgNotUpdatedException(Exception ex, WebRequest request) {
+
+        AppError response = new AppError("UserOrgNotUpdatedException; " + ex.getMessage());
+        return new ResponseEntity<AppError>(
+                response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({ PricatNotFoundException.class })
     public ResponseEntity<AppError> handlePricatNotFoundException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("PricatNotFoundException");
+        AppError response = new AppError("PricatNotFoundException; ");
         return new ResponseEntity<AppError>(
                 response, HttpStatus.NOT_FOUND);
     }
@@ -56,7 +64,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler({ XMLParsingException.class })
     public ResponseEntity<AppError> handleXMLParsingException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("XMLParsingException");
+        AppError response = new AppError("XMLParsingException; ");
         return new ResponseEntity<AppError>(
                 response, HttpStatus.BAD_REQUEST);
     }

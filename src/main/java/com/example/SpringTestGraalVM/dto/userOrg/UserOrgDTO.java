@@ -1,4 +1,4 @@
-package com.example.SpringTestGraalVM.dto;
+package com.example.SpringTestGraalVM.dto.userOrg;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 public class UserOrgDTO {
 
-    @NotEmpty(message = "Must not be empty")
-    @Size(min = 2, max = 100, message = "Must be between 2 and 100 characters long")
+    @NotEmpty(message = "Не должно быть пустым")
+    @Size(min = 2, max = 100, message = "Должно быть в диапазоне от 2 до 100 символов")
     private String username;
 
     @Email

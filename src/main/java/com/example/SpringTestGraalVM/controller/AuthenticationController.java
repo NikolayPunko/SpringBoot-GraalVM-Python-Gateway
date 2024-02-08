@@ -2,7 +2,7 @@ package com.example.SpringTestGraalVM.controller;
 
 import com.example.SpringTestGraalVM.dto.LoginRequestDTO;
 import com.example.SpringTestGraalVM.dto.LoginResponseDTO;
-import com.example.SpringTestGraalVM.dto.UserOrgDTO;
+import com.example.SpringTestGraalVM.dto.userOrg.UserOrgDTO;
 import com.example.SpringTestGraalVM.exceptions.UserOrgNotCreatedException;
 import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.security.JWTUtil;

@@ -1,4 +1,4 @@
-package com.example.SpringTestGraalVM.dto;
+package com.example.SpringTestGraalVM.dto.userOrg;
 
 import lombok.Getter;
 import lombok.Setter;
