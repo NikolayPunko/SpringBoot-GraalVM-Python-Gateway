@@ -4,7 +4,13 @@ create table User_org(
                          email varchar(100) UNIQUE NOT NULL ,
                          password varchar NOT NULL,
                          role varchar NOT NULL,
-                         GLN numeric(13,0) NOT NULL
+                         GLN numeric(13,0) NOT NULL,
+                         lastName varchar(30) NOT NULL default ('unknown'),
+                         firstName varchar(30) NOT NULL default ('unknown'),
+                         middleName varchar(30),
+                         phone varchar(20),
+                         profileUpdate timestamp,
+                         lastLogin timestamp
 );
 
 INSERT INTO User_org(username, email, password, role, GLN) VALUES ('user', 'user@mail.ru', '$2a$10$1zViA2sSYKVimgCJmCEg3uccihxpLc..TRyGjTwctQ0UPXgX6Ayz2', 'ROLE_USER', 1111111111111);
@@ -23,6 +29,13 @@ SELECT * FROM User_org;
 -- DELETE FROM User_org;
 
 -- ALTER TABLE User_org ADD GLN numeric(13,0) NOT NULL;
+ALTER TABLE User_org ADD lastName varchar(30) NOT NULL;
+ALTER TABLE User_org ADD firstName varchar(30) NOT NULL;
+ALTER TABLE User_org ADD middleName varchar(30);
+ALTER TABLE User_org ADD phone varchar(20);
+ALTER TABLE User_org ADD profileUpdate timestamp;
+ALTER TABLE User_org ADD lastLogin timestamp;
+
 
 -- Alter table Users rename to User_org;
 -- Alter table Person rename to Users;

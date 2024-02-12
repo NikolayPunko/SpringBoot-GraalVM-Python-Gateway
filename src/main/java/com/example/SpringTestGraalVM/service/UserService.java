@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -37,6 +38,11 @@ public class UserService {
         UserOrg userOrg = getUserOrgDetails();
         userOrg.setUsername(updatedProfile.getUsername());
         userOrg.setEmail(updatedProfile.getEmail());
+        userOrg.setLastName(updatedProfile.getLastName());
+        userOrg.setFirstName(updatedProfile.getFirstName());
+        userOrg.setMiddleName(updatedProfile.getMiddleName());
+        userOrg.setPhone(updatedProfile.getPhone());
+        userOrg.setProfileUpdate(LocalDateTime.now());
         usersRepository.save(userOrg);
     }
 
@@ -52,6 +58,7 @@ public class UserService {
         userOrg.setPassword(encodedPassword);
         usersRepository.save(userOrg);
     }
+
 
     private UserOrg getUserOrgDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

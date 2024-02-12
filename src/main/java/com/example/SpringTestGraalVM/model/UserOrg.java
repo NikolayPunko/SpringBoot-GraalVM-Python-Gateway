@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -38,9 +39,27 @@ public class UserOrg {
     @Column(name = "role")
     private String role;
 
-
     @Column(name = "gln")
     private long gln;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "middle_name")
+    private String middleName;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "profile_update")
+    private LocalDateTime profileUpdate;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
+
 
     public UserOrg() {
 
@@ -64,16 +83,34 @@ public class UserOrg {
         this.gln = gln;
     }
 
+    public UserOrg(String username, String email, String password, long gln, String lastName, String firstName, String middleName, String phone, LocalDateTime profileUpdate, LocalDateTime lastLogin) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.gln = gln;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.phone = phone;
+        this.profileUpdate = profileUpdate;
+        this.lastLogin = lastLogin;
+    }
 
     @Override
     public String toString() {
-        return "Person{" +
+        return "UserOrg{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
                 ", gln=" + gln +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", profileUpdate=" + profileUpdate +
+                ", lastLogin=" + lastLogin +
                 '}';
     }
 }

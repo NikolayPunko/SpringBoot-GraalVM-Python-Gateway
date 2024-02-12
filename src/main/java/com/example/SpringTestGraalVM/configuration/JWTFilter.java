@@ -1,8 +1,11 @@
 package com.example.SpringTestGraalVM.configuration;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.SpringTestGraalVM.model.UserOrg;
 import com.example.SpringTestGraalVM.security.JWTUtil;
+import com.example.SpringTestGraalVM.security.UserOrgDetails;
 import com.example.SpringTestGraalVM.service.PersonDetailsService;
+import com.example.SpringTestGraalVM.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -18,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 public class JWTFilter extends OncePerRequestFilter {
@@ -59,9 +64,11 @@ public class JWTFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
 
+
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
+
 
                 } catch (JWTVerificationException e) {
                     response.setHeader("error","Invalid JWT Token");
@@ -79,4 +86,5 @@ public class JWTFilter extends OncePerRequestFilter {
 
 
     }
+
 }
