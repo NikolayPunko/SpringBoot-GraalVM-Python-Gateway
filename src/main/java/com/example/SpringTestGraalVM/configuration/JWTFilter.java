@@ -1,11 +1,12 @@
 package com.example.SpringTestGraalVM.configuration;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.SpringTestGraalVM.exceptions.UserOrgNotUpdatedException;
 import com.example.SpringTestGraalVM.model.UserOrg;
+import com.example.SpringTestGraalVM.repositories.UsersRepository;
 import com.example.SpringTestGraalVM.security.JWTUtil;
 import com.example.SpringTestGraalVM.security.UserOrgDetails;
 import com.example.SpringTestGraalVM.service.PersonDetailsService;
-import com.example.SpringTestGraalVM.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -32,11 +32,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final PersonDetailsService personDetailsService;
 
+    private final UsersRepository usersRepository;
+
     @Autowired
-    public JWTFilter(AuthenticationEntryPoint authenticationEntryPoint, JWTUtil jwtUtil, PersonDetailsService personDetailsService) {
+    public JWTFilter(AuthenticationEntryPoint authenticationEntryPoint, JWTUtil jwtUtil, PersonDetailsService personDetailsService, UsersRepository usersRepository) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.jwtUtil = jwtUtil;
         this.personDetailsService = personDetailsService;
+        this.usersRepository = usersRepository;
     }
 
 
@@ -67,6 +70,16 @@ public class JWTFilter extends OncePerRequestFilter {
 
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                        try { //обновление последней авторизации
+                            UserOrgDetails userOrgDetails = (UserOrgDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                            UserOrg userOrg = userOrgDetails.getPerson();
+                            userOrg.setLastLogin(LocalDateTime.now());
+                            usersRepository.save(userOrg);
+                        } catch (Exception e){
+                            throw new UserOrgNotUpdatedException("Failed to update last login date;" + e.getMessage());
+                        }
+
                     }
 
 
