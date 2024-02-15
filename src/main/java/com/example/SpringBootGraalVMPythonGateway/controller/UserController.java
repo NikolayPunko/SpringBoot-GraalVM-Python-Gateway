@@ -55,15 +55,10 @@ public class UserController {
     @PutMapping("/user/changePassword")
     public ResponseEntity<HttpStatus> updatePassword(@RequestBody @Valid ChangePasswordRequestDTO passwordDTO,
                                             BindingResult bindingResult){
-        try {
-            throw new Error();
-        } catch (Exception e) {
-            throw new Error();
-        }
-//        checkBindingResult(bindingResult);
-//
-//        userService.updatePassword(passwordDTO);
-//        return new ResponseEntity<>(HttpStatus.OK);
+        checkBindingResult(bindingResult);
+
+        userService.updatePassword(passwordDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private void checkBindingResult(BindingResult bindingResult){
