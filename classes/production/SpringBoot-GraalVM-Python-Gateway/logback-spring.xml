@@ -57,12 +57,12 @@
 
 
     <!-- org.springframework.web -->
-    <logger name="org.springframework.web.servlet" level="debug" additivity="false">
+    <logger name="org.springframework.web.servlet" level="error" additivity="false">
         <appender-ref ref="WEBFile" />
 <!--        <appender-ref ref="Console" />-->
     </logger>
 
-    <logger name="org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor" level="debug" additivity="false">
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor" level="error" additivity="false">
         <appender-ref ref="WEBFile" />
 <!--        <appender-ref ref="Console" />-->
     </logger>
@@ -74,22 +74,17 @@
 
 
     <!-- org.hibernate -->
-    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+    <logger name="org.hibernate.SQL" level="error" additivity="false">
         <appender-ref ref="DBFile" />
 <!--        <appender-ref ref="Console" />-->
     </logger>
 
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="error" additivity="false">
         <appender-ref ref="DBFile" />
 <!--        <appender-ref ref="Console" />-->
     </logger>
 
 
-    <!-- server.tomcat -->
-    <logger name="org.apache.tomcat" level="debug" additivity="false">
-<!--        <appender-ref ref="DBFile" />-->
-<!--        <appender-ref ref="Console" />-->
-    </logger>
 
 
 </configuration>
