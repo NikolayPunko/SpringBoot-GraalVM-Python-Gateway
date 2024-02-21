@@ -13,10 +13,10 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface PricatRepository extends JpaRepository<Pricat, Long> {
 
-    List<Pricat> findByUSERIDAndPSTAndDTBetweenAndNDEStartingWith(int userId, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
+    List<Pricat> findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith(String tp, int userId, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
 
-    Optional<Pricat> findByFIDAndUSERIDAndSENDERAndPST( long id, int userId, long sender, String pst);
+    Optional<Pricat> findByTPAndFIDAndUSERIDAndSENDERAndPST(String tp, long id, int userId, long sender, String pst);
 
-    Optional<Pricat> findByFID(long id);
+    Optional<Pricat> findByTPAndFID(String tp, long id);
 
 }

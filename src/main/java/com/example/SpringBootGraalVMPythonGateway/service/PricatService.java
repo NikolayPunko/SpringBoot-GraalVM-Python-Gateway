@@ -86,20 +86,20 @@ public class PricatService {
     }
 
     public String findPricatById(long id) {
-        Optional<Pricat> findPricat = pricatRepository.findByFID(id); //узнать про валидацию владельца документа
+        Optional<Pricat> findPricat = pricatRepository.findByTPAndFID("RECADV", id); //узнать про валидацию владельца документа
         Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
         return pricat.getDOC();
     }
 
     public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("FGUID").descending());
-        return pricatRepository.findByUSERIDAndPSTAndDTBetweenAndNDEStartingWith(getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
+        return pricatRepository.findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith("RECADV", getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
                 filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
     }
 
     @Transactional
     public void sendPricat(long id) {
-        Pricat pricat = pricatRepository.findByFIDAndUSERIDAndSENDERAndPST(id, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
+        Pricat pricat = pricatRepository.findByTPAndFIDAndUSERIDAndSENDERAndPST("RECADV", id, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
                 .orElseThrow(PricatNotFoundException::new);
 
         UserOrg userOrgOpt = usersRepository.findByGln(pricat.getRECEIVER())
