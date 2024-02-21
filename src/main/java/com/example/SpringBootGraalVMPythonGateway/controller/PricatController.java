@@ -1,9 +1,9 @@
 package com.example.SpringBootGraalVMPythonGateway.controller;
 
-import com.example.SpringBootGraalVMPythonGateway.dto.PricatFilterRequestDTO;
-import com.example.SpringBootGraalVMPythonGateway.dto.PricatImportResponseDTO;
-import com.example.SpringBootGraalVMPythonGateway.dto.PricatResponseDTO;
-import com.example.SpringBootGraalVMPythonGateway.model.Pricat;
+import com.example.SpringBootGraalVMPythonGateway.dto.EdocFilterRequestDTO;
+import com.example.SpringBootGraalVMPythonGateway.dto.EdocImportResponseDTO;
+import com.example.SpringBootGraalVMPythonGateway.dto.EdocResponseDTO;
+import com.example.SpringBootGraalVMPythonGateway.model.Edoc;
 import com.example.SpringBootGraalVMPythonGateway.service.PricatService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,15 @@ public class PricatController {
     }
 
     @GetMapping("/pricats")
-    public List<PricatResponseDTO> getPricats(){
+    public List<EdocResponseDTO> getPricats(){
         return pricatService.findAll().stream().map(x -> convertPricatToPricatResponseDTO(x)).collect(Collectors.toList());
     }
 
 
     @PostMapping(value = "/import/PRICAT/Xml")
-    public ResponseEntity<PricatImportResponseDTO> importPricat(@RequestParam("xml") MultipartFile file){
+    public ResponseEntity<EdocImportResponseDTO> importPricat(@RequestParam("xml") MultipartFile file){
         long id = pricatService.importPricat(file);
-        return ResponseEntity.ok(new PricatImportResponseDTO(id));
+        return ResponseEntity.ok(new EdocImportResponseDTO(id));
     }
 
     @GetMapping("/PRICAT/send/{id}")
@@ -45,10 +45,10 @@ public class PricatController {
     }
 
     @PostMapping("/PRICAT/{documentState}/list")
-    public ResponseEntity<List<PricatResponseDTO>> getPricatByState(@PathVariable String documentState,
-                                                    @RequestParam(value = "page", defaultValue = "1") int page,
-                                                    @RequestParam(value = "size", defaultValue = "20") int size,
-                                                    @RequestBody @Valid PricatFilterRequestDTO filterDTO){
+    public ResponseEntity<List<EdocResponseDTO>> getPricatByState(@PathVariable String documentState,
+                                                                  @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                  @RequestParam(value = "size", defaultValue = "20") int size,
+                                                                  @RequestBody @Valid EdocFilterRequestDTO filterDTO){
         return ResponseEntity.ok(pricatService.findPricatByState(documentState, filterDTO, page, size)
                 .stream().map(x -> convertPricatToPricatResponseDTO(x)).collect(Collectors.toList()));
     }
@@ -59,19 +59,19 @@ public class PricatController {
     }
 
 
-    private static PricatResponseDTO convertPricatToPricatResponseDTO(Pricat pricat){
-        PricatResponseDTO responseDTO = new PricatResponseDTO();
-        responseDTO.setDocumentId(pricat.getFID());
-        responseDTO.setDateTime(pricat.getDT());
-        responseDTO.setDateTimeInsert(pricat.getDTINS());
-        responseDTO.setDateTimeUpdate(pricat.getDTUPD());
-        responseDTO.setDocumentDate(pricat.getDTDOC());
-        responseDTO.setEdi(pricat.getEDI());
-        responseDTO.setDocumentType(pricat.getTP());
-        responseDTO.setDocumentStatus(pricat.getPST());
-        responseDTO.setDocumentNumber(pricat.getNDE());
-        responseDTO.setSenderId(pricat.getSENDER());
-        responseDTO.setReceiverId(pricat.getRECEIVER());
+    private static EdocResponseDTO convertPricatToPricatResponseDTO(Edoc edoc){
+        EdocResponseDTO responseDTO = new EdocResponseDTO();
+        responseDTO.setDocumentId(edoc.getFID());
+        responseDTO.setDateTime(edoc.getDT());
+        responseDTO.setDateTimeInsert(edoc.getDTINS());
+        responseDTO.setDateTimeUpdate(edoc.getDTUPD());
+        responseDTO.setDocumentDate(edoc.getDTDOC());
+        responseDTO.setEdi(edoc.getEDI());
+        responseDTO.setDocumentType(edoc.getTP());
+        responseDTO.setDocumentStatus(edoc.getPST());
+        responseDTO.setDocumentNumber(edoc.getNDE());
+        responseDTO.setSenderId(edoc.getSENDER());
+        responseDTO.setReceiverId(edoc.getRECEIVER());
         return responseDTO;
     }
 

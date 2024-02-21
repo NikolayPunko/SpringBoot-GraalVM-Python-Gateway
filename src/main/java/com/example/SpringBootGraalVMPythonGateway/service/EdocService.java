@@ -1,12 +1,12 @@
 package com.example.SpringBootGraalVMPythonGateway.service;
 
-import com.example.SpringBootGraalVMPythonGateway.dto.PricatFilterRequestDTO;
-import com.example.SpringBootGraalVMPythonGateway.exceptions.PricatNotFoundException;
+import com.example.SpringBootGraalVMPythonGateway.dto.EdocFilterRequestDTO;
+import com.example.SpringBootGraalVMPythonGateway.exceptions.EdocNotFoundException;
 import com.example.SpringBootGraalVMPythonGateway.exceptions.UserOrgNotFoundException;
 import com.example.SpringBootGraalVMPythonGateway.exceptions.XMLParsingException;
-import com.example.SpringBootGraalVMPythonGateway.model.Pricat;
+import com.example.SpringBootGraalVMPythonGateway.model.Edoc;
 import com.example.SpringBootGraalVMPythonGateway.model.UserOrg;
-import com.example.SpringBootGraalVMPythonGateway.repositories.PricatRepository;
+import com.example.SpringBootGraalVMPythonGateway.repositories.EdocRepository;
 import com.example.SpringBootGraalVMPythonGateway.repositories.UsersRepository;
 import com.example.SpringBootGraalVMPythonGateway.security.UserOrgDetails;
 import jakarta.persistence.EntityManager;
@@ -44,76 +44,76 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class EdocService {
 
-    private final PricatRepository pricatRepository;
+    private final EdocRepository edocRepository;
     private final UsersRepository usersRepository;
 
     private final EntityManager entityManager;
 
     @Autowired
-    public EdocService(PricatRepository pricatRepository, UsersRepository usersRepository, EntityManager entityManager) {
-        this.pricatRepository = pricatRepository;
+    public EdocService(EdocRepository edocRepository, UsersRepository usersRepository, EntityManager entityManager) {
+        this.edocRepository = edocRepository;
         this.usersRepository = usersRepository;
         this.entityManager = entityManager;
     }
 
     @Transactional
-    public long importEdoc(Pricat pricat) {
+    public long importEdoc(Edoc edoc) {
 
-        pricat.setUSERID(getUserOrgDetails().getId());
-        pricat.setFTM(LocalDateTime.now());
-//        pricat.setF_DEL(0);
-        pricat.setEDI("001");
+        edoc.setUSERID(getUserOrgDetails().getId());
+        edoc.setFTM(LocalDateTime.now());
+//        edoc.setF_DEL(0);
+        edoc.setEDI("001");
 
-        pricat.setPST("IMPORTED");
-        pricat.setDT(LocalDateTime.now());
-        pricat.setDTINS(LocalDateTime.now());
-        pricat.setDTUPD(LocalDateTime.now());
+        edoc.setPST("IMPORTED");
+        edoc.setDT(LocalDateTime.now());
+        edoc.setDTINS(LocalDateTime.now());
+        edoc.setDTUPD(LocalDateTime.now());
 
-        save(pricat);
-        entityManager.refresh(pricat);
+        save(edoc);
+        entityManager.refresh(edoc);
 
-        pricat.setDOC(assignUNBAndUNZ(pricat.getDOC(), pricat.getFID())); //решить проблему
-        save(pricat);
-        return pricat.getFID();
+        edoc.setDOC(assignUNBAndUNZ(edoc.getDOC(), edoc.getFID()));
+        save(edoc);
+        return edoc.getFID();
     }
 
     @Transactional
     public void sendEdoc(String tp, long id) {
-        Pricat pricat = pricatRepository.findByTPAndFIDAndUSERIDAndSENDERAndPST(tp, id, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
-                .orElseThrow(PricatNotFoundException::new);
+        Edoc edoc = edocRepository.findByTPAndFIDAndUSERIDAndSENDERAndPST(tp, id, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
+                .orElseThrow(() -> new EdocNotFoundException("Документ для отправления не найден!"));
 
-        UserOrg userOrgOpt = usersRepository.findByGln(pricat.getRECEIVER())
+        UserOrg userOrgOpt = usersRepository.findByGln(edoc.getRECEIVER())
                 .orElseThrow(UserOrgNotFoundException::new);
 
-        Pricat copyPricat = new Pricat(pricat);
+        Edoc copyEdoc = new Edoc(edoc);
 
-        copyPricat.setUSERID(userOrgOpt.getId());
-        copyPricat.setPST("TRANSFERRED");
-        copyPricat.setDTINS(LocalDateTime.now());
-        copyPricat.setDTUPD(LocalDateTime.now());
+        copyEdoc.setUSERID(userOrgOpt.getId());
+        copyEdoc.setPST("TRANSFERRED");
+        copyEdoc.setDTINS(LocalDateTime.now());
+        copyEdoc.setDTUPD(LocalDateTime.now());
 
-        pricat.setPST("TRANSFERRED");
-        pricat.setDTUPD(LocalDateTime.now());
+        edoc.setPST("TRANSFERRED");
+        edoc.setDTUPD(LocalDateTime.now());
 
-        save(pricat);
-        save(copyPricat);
+        save(edoc);
+        save(copyEdoc);
     }
 
     public String findEdocById(String tp, long id) {
-        Optional<Pricat> findPricat = pricatRepository.findByTPAndFID(tp, id);
-        Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
-        return pricat.getDOC();
+        Optional<Edoc> findEdoc = edocRepository.findByTPAndFID(tp, id);
+        Edoc edoc = findEdoc.orElseThrow(() -> new EdocNotFoundException("Документ не найден!"));
+        return edoc.getDOC();
     }
 
-    public List<Pricat> findEdocByState(String tp, String state, PricatFilterRequestDTO filterDTO, int page, int size) {
+    public List<Edoc> findEdocByState(String tp, String state, EdocFilterRequestDTO filterDTO, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("FGUID").descending());
-        return pricatRepository.findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith(tp, getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
+        return edocRepository.findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith(tp, getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
                 filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
     }
 
     @Transactional
-    public void save(Pricat pricat) {
-        pricatRepository.save(pricat);
+    public void save(Edoc edoc) {
+        edocRepository.save(edoc);
     }
 
     private String assignUNBAndUNZ(String xml, long value) {
@@ -154,7 +154,7 @@ public class EdocService {
 
             return EdocService.convertDOMXMLtoString(document);
         } catch (Exception e) {
-            throw new XMLParsingException();
+            throw new XMLParsingException("Не удалось распарсить xml файл!");
         }
     }
 
@@ -207,7 +207,7 @@ public class EdocService {
             transformer.transform(source, _result);
             return sw.toString();
         } catch (TransformerException e) {
-            throw new XMLParsingException();
+            throw new XMLParsingException("Не удалось распарсить xml файл!");
         }
     }
 

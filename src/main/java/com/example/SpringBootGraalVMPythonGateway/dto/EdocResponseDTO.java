@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PricatResponseDTO {
+public class EdocResponseDTO {
 
     private long documentId;
     private LocalDateTime dateTime;

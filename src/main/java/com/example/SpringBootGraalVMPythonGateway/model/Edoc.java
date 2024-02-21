@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "BD_EDOC")
-public class Pricat {
+public class Edoc {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,24 +72,24 @@ public class Pricat {
     @Column(name = "DTUPD")
     private LocalDateTime DTUPD;
 
-    public Pricat(Pricat pricat) {
+    public Edoc(Edoc edoc) {
 //        this.FGUID = pricat.getFGUID();
 //        this.USERID = pricat.getUSERID();
-        this.FID = pricat.getFID();
-        this.FTM = pricat.getFTM();
-        this.FDEL = pricat.getFDEL();
-        this.EDI = pricat.getEDI();
-        this.TP = pricat.getTP();
-        this.PST = pricat.getPST();
-        this.NDE = pricat.getNDE();
-        this.DT = pricat.getDT();
-        this.DTDOC = pricat.getDTDOC();
-        this.RECEIVER = pricat.getRECEIVER();
-        this.SENDER = pricat.getSENDER();
-        this.DOC = pricat.getDOC();
-        this.ID = pricat.getID();
-        this.DTINS = pricat.getDTINS();
-        this.DTUPD = pricat.getDTUPD();
+        this.FID = edoc.getFID();
+        this.FTM = edoc.getFTM();
+        this.FDEL = edoc.getFDEL();
+        this.EDI = edoc.getEDI();
+        this.TP = edoc.getTP();
+        this.PST = edoc.getPST();
+        this.NDE = edoc.getNDE();
+        this.DT = edoc.getDT();
+        this.DTDOC = edoc.getDTDOC();
+        this.RECEIVER = edoc.getRECEIVER();
+        this.SENDER = edoc.getSENDER();
+        this.DOC = edoc.getDOC();
+        this.ID = edoc.getID();
+        this.DTINS = edoc.getDTINS();
+        this.DTUPD = edoc.getDTUPD();
     }
 
     @Override

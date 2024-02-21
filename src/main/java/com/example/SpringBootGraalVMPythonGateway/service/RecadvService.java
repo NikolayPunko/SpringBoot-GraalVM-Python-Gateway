@@ -1,8 +1,8 @@
 package com.example.SpringBootGraalVMPythonGateway.service;
-import com.example.SpringBootGraalVMPythonGateway.dto.PricatFilterRequestDTO;
+import com.example.SpringBootGraalVMPythonGateway.dto.EdocFilterRequestDTO;
 import com.example.SpringBootGraalVMPythonGateway.exceptions.XMLParsingException;
-import com.example.SpringBootGraalVMPythonGateway.model.Pricat;
-import com.example.SpringBootGraalVMPythonGateway.repositories.PricatRepository;
+import com.example.SpringBootGraalVMPythonGateway.model.Edoc;
+import com.example.SpringBootGraalVMPythonGateway.repositories.EdocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,20 +21,20 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class RecadvService {
 
-    private final PricatRepository pricatRepository;
+    private final EdocRepository edocRepository;
     private final EdocService edocService;
 
     @Autowired
-    public RecadvService(PricatRepository pricatRepository, EdocService edocService) {
-        this.pricatRepository = pricatRepository;
+    public RecadvService(EdocRepository edocRepository, EdocService edocService) {
+        this.edocRepository = edocRepository;
         this.edocService = edocService;
     }
 
     @Transactional
     public long importRecadv(MultipartFile file) {
-        Pricat pricat = parsingXMLtoRecadv(EdocService.trimXML(EdocService.convertXMLtoString(file)), new Pricat());
-        pricat.setTP("RECADV");
-        return edocService.importEdoc(pricat);
+        Edoc edoc = parsingXMLtoRecadv(EdocService.trimXML(EdocService.convertXMLtoString(file)), new Edoc());
+        edoc.setTP("RECADV");
+        return edocService.importEdoc(edoc);
     }
 
     @Transactional
@@ -47,7 +47,7 @@ public class RecadvService {
         return edocService.findEdocById("RECADV", id);
     }
 
-    public List<Pricat> findRecadvByState(String state, PricatFilterRequestDTO filterDTO, int page, int size) {
+    public List<Edoc> findRecadvByState(String state, EdocFilterRequestDTO filterDTO, int page, int size) {
         return edocService.findEdocByState("RECADV", state, filterDTO, page, size);
     }
 
@@ -60,7 +60,7 @@ public class RecadvService {
         return null;
     }
 
-    public Pricat parsingXMLtoRecadv(String xml, Pricat pricat) {
+    public Edoc parsingXMLtoRecadv(String xml, Edoc edoc) {
         try {
             String NDE = "", DTDOC = "", RECEIVER = "", SENDER = "";
 
@@ -69,7 +69,7 @@ public class RecadvService {
             Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 
             if(!document.getDocumentElement().getTagName().equals("RECADV")){
-                throw new XMLParsingException();
+                throw new XMLParsingException("Не удалось распарсить xml файл!");
             }
 
             NodeList BGMList = document.getDocumentElement().getElementsByTagName("BGM");
@@ -96,15 +96,15 @@ public class RecadvService {
                 }
             }
 
-            pricat.setNDE(NDE);
-            pricat.setDTDOC(LocalDateTime.parse(DTDOC, EdocService.DATE_FORMAT));
-            pricat.setRECEIVER(Long.parseLong(RECEIVER));
-            pricat.setSENDER(Long.parseLong(SENDER));
-            pricat.setDOC(xml);
+            edoc.setNDE(NDE);
+            edoc.setDTDOC(LocalDateTime.parse(DTDOC, EdocService.DATE_FORMAT));
+            edoc.setRECEIVER(Long.parseLong(RECEIVER));
+            edoc.setSENDER(Long.parseLong(SENDER));
+            edoc.setDOC(xml);
 
-            return pricat;
+            return edoc;
         } catch (Exception e) {
-            throw new XMLParsingException();
+            throw new XMLParsingException("Не удалось распарсить xml файл!");
         }
     }
 

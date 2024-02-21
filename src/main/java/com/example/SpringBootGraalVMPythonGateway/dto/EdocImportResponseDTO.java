@@ -5,11 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PricatImportResponseDTO {
+public class EdocImportResponseDTO {
 
     private long documentId;
 
-    public PricatImportResponseDTO(long documentId) {
+    public EdocImportResponseDTO(long documentId) {
         this.documentId = documentId;
     }
 }

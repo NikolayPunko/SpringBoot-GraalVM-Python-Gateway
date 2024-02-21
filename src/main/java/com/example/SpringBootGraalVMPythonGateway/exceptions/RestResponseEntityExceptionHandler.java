@@ -53,10 +53,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ PricatNotFoundException.class })
+    @ExceptionHandler({ EdocNotFoundException.class })
     public ResponseEntity<AppError> handlePricatNotFoundException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("PricatNotFoundException; ");
+        AppError response = new AppError("PricatNotFoundException; " + ex.getMessage());
         return new ResponseEntity<AppError>(
                 response, HttpStatus.NOT_FOUND);
     }
@@ -64,7 +64,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler({ XMLParsingException.class })
     public ResponseEntity<AppError> handleXMLParsingException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("XMLParsingException; ");
+        AppError response = new AppError("XMLParsingException; " + ex.getMessage());
         return new ResponseEntity<AppError>(
                 response, HttpStatus.BAD_REQUEST);
     }
