@@ -42,15 +42,13 @@ import javax.xml.transform.stream.StreamResult;
 public class PricatService {
 
     private final PricatRepository pricatRepository;
-    private final UsersRepository usersRepository;
 
-    private final EntityManager entityManager;
+    private final EdocService edocService;
 
     @Autowired
-    public PricatService(PricatRepository pricatRepository, UsersRepository usersRepository, EntityManager entityManager) {
+    public PricatService(PricatRepository pricatRepository, EdocService edocService) {
         this.pricatRepository = pricatRepository;
-        this.usersRepository = usersRepository;
-        this.entityManager = entityManager;
+        this.edocService = edocService;
     }
 
     public List<Pricat> findAll() {
@@ -59,109 +57,32 @@ public class PricatService {
 
     @Transactional
     public long importPricat(MultipartFile file) {
-        Pricat pricat = parsingXMLtoPricat(trimXML(convertXMLtoString(file)), new Pricat());
-
-        pricat.setUSERID(getUserOrgDetails().getId());
-        pricat.setFTM(LocalDateTime.now());
-//        pricat.setF_DEL(0);
-        pricat.setEDI("001");
+        Pricat pricat = parsingXMLtoPricat(EdocService.trimXML(EdocService.convertXMLtoString(file)), new Pricat());
         pricat.setTP("PRICAT");
-        pricat.setPST("IMPORTED");
-        pricat.setDT(LocalDateTime.now());
-        pricat.setDTINS(LocalDateTime.now());
-        pricat.setDTUPD(LocalDateTime.now());
-
-        save(pricat);
-        entityManager.refresh(pricat);
-
-        pricat.setDOC(assignUNBAndUNZ(pricat.getDOC(), pricat.getFID()));
-        save(pricat);
-        return pricat.getFID();
-    }
-
-
-    @Transactional
-    public void save(Pricat pricat) {
-        pricatRepository.save(pricat);
-    }
-
-    public String findPricatById(long id) {
-        Optional<Pricat> findPricat = pricatRepository.findByTPAndFID("RECADV", id); //узнать про валидацию владельца документа
-        Pricat pricat = findPricat.orElseThrow(PricatNotFoundException::new);
-        return pricat.getDOC();
-    }
-
-    public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("FGUID").descending());
-        return pricatRepository.findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith("RECADV", getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
-                filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
+        return edocService.importEdoc(pricat);
     }
 
     @Transactional
     public void sendPricat(long id) {
-        Pricat pricat = pricatRepository.findByTPAndFIDAndUSERIDAndSENDERAndPST("RECADV", id, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
-                .orElseThrow(PricatNotFoundException::new);
-
-        UserOrg userOrgOpt = usersRepository.findByGln(pricat.getRECEIVER())
-                .orElseThrow(UserOrgNotFoundException::new);
-
-        Pricat copyPricat = new Pricat(pricat);
-
-        copyPricat.setUSERID(userOrgOpt.getId());
-        copyPricat.setPST("TRANSFERRED");
-        copyPricat.setDTINS(LocalDateTime.now());
-        copyPricat.setDTUPD(LocalDateTime.now());
-
-        pricat.setPST("TRANSFERRED");
-        pricat.setDTUPD(LocalDateTime.now());
-
-        save(pricat);
-        save(copyPricat);
+        edocService.sendEdoc("PRICAT", id);
     }
 
 
-//    public String test() {
-//        File file = new File("C:\\Users\\User\\Desktop\\XML_test\\PRICAT_Final2_shot.xml");
-//        String result;
-//        try {
-//            result = Files.readString(file.toPath(), Charset.defaultCharset());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        result = assignUNBAndUNZ(trimXML(result), 66666);
-//        return result;
-//    }
-
-    private String assignUNBAndUNZ(String xml, long value) {
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
-
-            Node nodeUNZ = document.getDocumentElement().getElementsByTagName("UNZ").item(0);
-            removeChildNode(nodeUNZ, "E0020");
-
-            Node nodeUNB = document.getDocumentElement().getElementsByTagName("UNB").item(0);
-            removeChildNode(nodeUNB, "E0020");
-
-            Element newElement = document.createElement("E0020");
-            newElement.setTextContent(String.valueOf(value));
-
-            nodeUNZ.appendChild(newElement.cloneNode(true));
-            nodeUNB.appendChild(newElement.cloneNode(true));
-
-            return convertDOMXMLtoString(document);
-        } catch (Exception e) {
-            throw new XMLParsingException();
-        }
+    public String findPricatById(long id) {
+        return edocService.findEdocById("PRICAT", id);
     }
 
-    private void removeChildNode(Node node, String child){
+    public List<Pricat> findPricatByState(String state, PricatFilterRequestDTO filterDTO, int page, int size) {
+        return edocService.findEdocByState("PRICAT", state, filterDTO, page, size);
+    }
+
+    public Node findChildNode(Node node, String child) {
         for (int i = 0; i < node.getChildNodes().getLength(); i++) {
             if (node.getChildNodes().item(i).getNodeName().equals(child)) {
-                node.removeChild(node.getChildNodes().item(i));
+                return node.getChildNodes().item(i);
             }
         }
+        return null;
     }
 
     public Pricat parsingXMLtoPricat(String xml, Pricat pricat) {
@@ -172,25 +93,36 @@ public class PricatService {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 
-            NDE = document.getDocumentElement().getElementsByTagName("BGM").item(0).getChildNodes().item(1)
-                    .getChildNodes().item(0).getTextContent();
+            if(!document.getDocumentElement().getTagName().equals("PRICAT")){
+                throw new XMLParsingException();
+            }
 
-            DTDOC = document.getDocumentElement().getElementsByTagName("DTM").item(0).getChildNodes().item(0)
-                    .getChildNodes().item(1).getTextContent();
+            NodeList BGMList = document.getDocumentElement().getElementsByTagName("BGM");
+            for (int i = 0; i < BGMList.getLength(); i++) {
+                if (BGMList.item(i).getParentNode().getNodeName().equals("PRICAT")) {
+                    NDE = findChildNode(findChildNode(BGMList.item(i), "C106"), "E1004").getTextContent();
+                }
+            }
 
-            NodeList SG2Elements = document.getDocumentElement().getElementsByTagName("SG2");
-            for (int i = 0; i < SG2Elements.getLength(); i++) {
-                Node node = SG2Elements.item(i).getChildNodes().item(0)
-                        .getChildNodes().item(0);
-                if (node.getNodeName().equals("E3035") && node.getTextContent().equals("BY")) {
-                    RECEIVER = node.getParentNode().getChildNodes().item(1).getFirstChild().getTextContent();
-                } else if (node.getNodeName().equals("E3035") && node.getTextContent().equals("SU")) {
-                    SENDER = node.getParentNode().getChildNodes().item(1).getFirstChild().getTextContent();
+            NodeList DTMList = document.getDocumentElement().getElementsByTagName("DTM");
+            for (int i = 0; i < DTMList.getLength(); i++) {
+                if (DTMList.item(i).getParentNode().getNodeName().equals("PRICAT")) {
+                    DTDOC = findChildNode(findChildNode(DTMList.item(i), "C507"), "E2380").getTextContent();
+                }
+            }
+
+            NodeList SG2List = document.getDocumentElement().getElementsByTagName("SG2");
+            for (int i = 0; i < SG2List.getLength(); i++) {
+                Node node = findChildNode(findChildNode(SG2List.item(i), "NAD"), "E3035");
+                if (node.getTextContent().equals("BY")) {
+                    RECEIVER = findChildNode(findChildNode(node.getParentNode(), "C082"), "E3039").getTextContent();
+                } else if (node.getTextContent().equals("SU")) {
+                    SENDER = findChildNode(findChildNode(node.getParentNode(), "C082"), "E3039").getTextContent();
                 }
             }
 
             pricat.setNDE(NDE);
-            pricat.setDTDOC(LocalDateTime.parse(DTDOC, DATE_FORMAT));
+            pricat.setDTDOC(LocalDateTime.parse(DTDOC, EdocService.DATE_FORMAT));
             pricat.setRECEIVER(Long.parseLong(RECEIVER));
             pricat.setSENDER(Long.parseLong(SENDER));
             pricat.setDOC(xml);
@@ -201,59 +133,43 @@ public class PricatService {
         }
     }
 
-    public static String trimXML(String input) {
-        BufferedReader reader = new BufferedReader(new StringReader(input));
-        StringBuffer result = new StringBuffer();
-        try {
-            String line;
-            while ((line = reader.readLine()) != null)
-                result.append(line.trim());
-            return result.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public Pricat parsingXMLtoPricat(String xml, Pricat pricat) {
+//        try {
+//            String NDE = "", DTDOC = "", RECEIVER = "", SENDER = "";
+//
+//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder builder = factory.newDocumentBuilder();
+//            Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+//
+//            NDE = document.getDocumentElement().getElementsByTagName("BGM").item(0).getChildNodes().item(1)
+//                    .getChildNodes().item(0).getTextContent();
+//
+//            DTDOC = document.getDocumentElement().getElementsByTagName("DTM").item(0).getChildNodes().item(0)
+//                    .getChildNodes().item(1).getTextContent();
+//
+//            NodeList SG2Elements = document.getDocumentElement().getElementsByTagName("SG2");
+//            for (int i = 0; i < SG2Elements.getLength(); i++) {
+//                Node node = SG2Elements.item(i).getChildNodes().item(0)
+//                        .getChildNodes().item(0);
+//                if (node.getNodeName().equals("E3035") && node.getTextContent().equals("BY")) {
+//                    RECEIVER = node.getParentNode().getChildNodes().item(1).getFirstChild().getTextContent();
+//                } else if (node.getNodeName().equals("E3035") && node.getTextContent().equals("SU")) {
+//                    SENDER = node.getParentNode().getChildNodes().item(1).getFirstChild().getTextContent();
+//                }
+//            }
+//
+//            pricat.setNDE(NDE);
+//            pricat.setDTDOC(LocalDateTime.parse(DTDOC, EdocService.DATE_FORMAT));
+//            pricat.setRECEIVER(Long.parseLong(RECEIVER));
+//            pricat.setSENDER(Long.parseLong(SENDER));
+//            pricat.setDOC(xml);
+//
+//            return pricat;
+//        } catch (Exception e) {
+//            throw new XMLParsingException();
+//        }
+//    }
 
-    private String convertDOMXMLtoString(Document doc) {
-        try {
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
-
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-//            transformer.setOutputProperty( OutputKeys.INDENT, "yes" ); //выравнивание
-            transformer.setOutputProperty("encoding", "UTF-8");
-
-            DOMSource source = new DOMSource(doc);
-            StringWriter sw = new StringWriter();
-            StreamResult _result = new StreamResult(sw);
-            transformer.transform(source, _result);
-            return sw.toString();
-        } catch (TransformerException e) {
-            throw new XMLParsingException();
-        }
-    }
-
-    private String convertXMLtoString(MultipartFile file) {
-        String str = null;
-        try {
-            str = new String(file.getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return str;
-    }
-
-    private UserOrg getUserOrgDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserOrgDetails userOrgDetails = (UserOrgDetails) authentication.getPrincipal();
-        return userOrgDetails.getPerson();
-    }
-
-    private static DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder().appendPattern("yyyyMMdd[ [HH][:mm][:ss][.SSS]]")
-            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-            .toFormatter();
 
 
 }

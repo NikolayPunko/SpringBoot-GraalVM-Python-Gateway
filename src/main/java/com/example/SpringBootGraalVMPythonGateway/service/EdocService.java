@@ -20,17 +20,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -71,7 +72,7 @@ public class EdocService {
         save(pricat);
         entityManager.refresh(pricat);
 
-//        pricat.setDOC(assignUNBAndUNZ(pricat.getDOC(), pricat.getFID()));
+        pricat.setDOC(assignUNBAndUNZ(pricat.getDOC(), pricat.getFID())); //решить проблему
         save(pricat);
         return pricat.getFID();
     }
@@ -115,6 +116,55 @@ public class EdocService {
         pricatRepository.save(pricat);
     }
 
+    private String assignUNBAndUNZ(String xml, long value) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+
+            if(document.getDocumentElement().getElementsByTagName("UNB").getLength()==0){
+                document.createElement("UNB");
+            }
+
+            Node nodeUNB = document.getDocumentElement().getElementsByTagName("UNB").item(0);
+            for (int i = 0; i < nodeUNB.getChildNodes().getLength(); i++) {
+                if(nodeUNB.getChildNodes().item(i).getNodeName().equals("E0020")){
+                    removeChildNode(nodeUNB, "E0020");
+                }
+            }
+
+
+            if(document.getDocumentElement().getElementsByTagName("UNZ").getLength()==0){
+                document.getDocumentElement().appendChild(document.createElement("UNZ"));
+            }
+
+            Node nodeUNZ = document.getDocumentElement().getElementsByTagName("UNZ").item(0);
+            for (int i = 0; i < nodeUNZ.getChildNodes().getLength(); i++) {
+                if(nodeUNZ.getChildNodes().item(i).getNodeName().equals("E0020")){
+                    removeChildNode(nodeUNZ, "E0020");
+                }
+            }
+
+            Element newElement = document.createElement("E0020");
+            newElement.setTextContent(String.valueOf(value));
+
+            nodeUNB.appendChild(newElement.cloneNode(true));
+            nodeUNZ.appendChild(newElement.cloneNode(true));
+
+
+            return EdocService.convertDOMXMLtoString(document);
+        } catch (Exception e) {
+            throw new XMLParsingException();
+        }
+    }
+
+    private void removeChildNode(Node node, String child) {
+        for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+            if (node.getChildNodes().item(i).getNodeName().equals(child)) {
+                node.removeChild(node.getChildNodes().item(i));
+            }
+        }
+    }
 
 
     private UserOrg getUserOrgDetails() {
