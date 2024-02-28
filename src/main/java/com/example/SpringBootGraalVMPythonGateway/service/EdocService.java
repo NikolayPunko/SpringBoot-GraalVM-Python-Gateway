@@ -79,7 +79,7 @@ public class EdocService {
 
     @Transactional
     public void sendEdoc(String tp, long id) {
-        Edoc edoc = edocRepository.findByTPAndFIDAndUSERIDAndSENDERAndPST(tp, id, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
+        Edoc edoc = edocRepository.findByFIDAndTPAndUSERIDAndSENDERAndPST(id, tp, getUserOrgDetails().getId(), getUserOrgDetails().getGln(), "IMPORTED")
                 .orElseThrow(() -> new EdocNotFoundException("Документ для отправления не найден!"));
 
         UserOrg userOrgOpt = usersRepository.findByGln(edoc.getRECEIVER())
@@ -100,15 +100,19 @@ public class EdocService {
     }
 
     public String findEdocById(String tp, long id) {
-        Optional<Edoc> findEdoc = edocRepository.findByTPAndFID(tp, id);
+        Optional<Edoc> findEdoc = edocRepository.findByFIDAndTP(id, tp);
         Edoc edoc = findEdoc.orElseThrow(() -> new EdocNotFoundException("Документ не найден!"));
         return edoc.getDOC();
     }
 
     public List<Edoc> findEdocByState(String tp, String state, EdocFilterRequestDTO filterDTO, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("FGUID").descending());
-        return edocRepository.findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith(tp, getUserOrgDetails().getId(), state, filterDTO.getDocumentDateStart(),
-                filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
+        if(filterDTO.getDocumentDateStart() == null || filterDTO.getDocumentDateEnd() == null){
+            return edocRepository.findByUSERIDAndTPAndPSTAndNDEStartingWith(getUserOrgDetails().getId(), tp, state, filterDTO.getDocumentNumber(), pageable);
+        } else {
+            return edocRepository.findByUSERIDAndTPAndPSTAndDTBetweenAndNDEStartingWith(getUserOrgDetails().getId(), tp, state, filterDTO.getDocumentDateStart(),
+                    filterDTO.getDocumentDateEnd(), filterDTO.getDocumentNumber(), pageable);
+        }
     }
 
     @Transactional

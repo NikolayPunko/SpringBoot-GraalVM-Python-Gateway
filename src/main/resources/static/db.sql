@@ -1,8 +1,9 @@
-CREATE INDEX User_org_username_index ON User_org (username);
-CREATE INDEX User_org_gln_index ON User_org (GLN);
-CREATE INDEX BD_EDOC_F_ID_index ON BD_EDOC (F_ID);
-CREATE INDEX BD_EDOC_User_id_AND_DT_index ON BD_EDOC (User_id, DT);
-CREATE INDEX BD_EDOC_User_id_AND_NDE_index ON BD_EDOC (User_id, NDE);
+
+CREATE INDEX username_index ON User_org (username);
+CREATE INDEX gln_index ON User_org (GLN);
+CREATE INDEX UserId_TP_PST_DT_NDE_index ON BD_EDOC (User_id, TP, PST, DT, NDE);
+CREATE INDEX UserId_TP_PST_NDE_index ON BD_EDOC (User_id, TP, PST, NDE);
+CREATE INDEX FID_index ON BD_EDOC (F_ID);
 
 
 create table User_org(

@@ -13,10 +13,13 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface EdocRepository extends JpaRepository<Edoc, Long> {
 
-    List<Edoc> findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith(String tp, int userId, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
+//    List<Edoc> findByTPAndUSERIDAndPSTAndDTBetweenAndNDEStartingWith(String tp, int userId, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
 
-    Optional<Edoc> findByTPAndFIDAndUSERIDAndSENDERAndPST(String tp, long id, int userId, long sender, String pst);
+    List<Edoc> findByUSERIDAndTPAndPSTAndDTBetweenAndNDEStartingWith(int userId, String tp, String state, LocalDateTime start, LocalDateTime end, String nde, Pageable pageable);
+    List<Edoc> findByUSERIDAndTPAndPSTAndNDEStartingWith(int userId, String tp, String state, String nde, Pageable pageable);
 
-    Optional<Edoc> findByTPAndFID(String tp, long id);
+    Optional<Edoc> findByFIDAndTPAndUSERIDAndSENDERAndPST(long id, String tp, int userId, long sender, String pst);
+
+    Optional<Edoc> findByFIDAndTP(long id, String tp);
 
 }
