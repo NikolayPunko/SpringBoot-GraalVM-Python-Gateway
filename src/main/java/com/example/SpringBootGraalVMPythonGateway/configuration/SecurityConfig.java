@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.POST, "api/authentication/authenticate").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/authentication/registration").permitAll()
-                                .requestMatchers("/py/test").permitAll()
+                                .requestMatchers("/test/**").permitAll()
 //                                .requestMatchers( "/py/**").permitAll()
                                 .anyRequest().authenticated()
                 )
