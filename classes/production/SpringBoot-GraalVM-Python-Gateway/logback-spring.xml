@@ -57,19 +57,19 @@
 
 
     <!-- org.springframework.web -->
-    <logger name="org.springframework.web.servlet" level="error" additivity="false">
-        <appender-ref ref="WEBFile" />
-<!--        <appender-ref ref="Console" />-->
+    <logger name="org.springframework.web.servlet" level="trace" additivity="false">
+<!--        <appender-ref ref="WEBFile" />-->
+        <appender-ref ref="Console" />
     </logger>
 
-    <logger name="org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor" level="error" additivity="false">
-        <appender-ref ref="WEBFile" />
-<!--        <appender-ref ref="Console" />-->
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor" level="trace" additivity="false">
+<!--        <appender-ref ref="WEBFile" />-->
+        <appender-ref ref="Console" />
     </logger>
 
-    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="error" additivity="false">
-        <appender-ref ref="WEBFile" />
-<!--        <appender-ref ref="Console" />-->
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="trace" additivity="false">
+<!--        <appender-ref ref="WEBFile" />-->
+        <appender-ref ref="Console" />
     </logger>
 
 

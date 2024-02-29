@@ -5,6 +5,7 @@ import com.example.SpringBootGraalVMPythonGateway.dto.EdocImportResponseDTO;
 import com.example.SpringBootGraalVMPythonGateway.dto.EdocResponseDTO;
 import com.example.SpringBootGraalVMPythonGateway.model.Edoc;
 import com.example.SpringBootGraalVMPythonGateway.service.PricatService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
