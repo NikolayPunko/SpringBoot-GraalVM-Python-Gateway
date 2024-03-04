@@ -4,8 +4,8 @@
     <!-- always a good activate OnConsoleStatusListener -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
-<!--    <property name="LOGS" value="./logs" />-->
-    <property name="LOGS" value="/home/javadev2/projects/spring/logs" />
+    <property name="LOGS" value="./logs" />
+<!--    <property name="LOGS" value="/home/javadev2/projects/spring/logs" />-->
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
@@ -76,7 +76,7 @@
 
     <!-- org.springframework.web -->
 
-    <logger name="org.springframework.web" level="error" additivity="false">
+    <logger name="org.springframework.web" level="debug" additivity="false">
         <appender-ref ref="WEBFile" />
         <!--        <appender-ref ref="Console" />-->
     </logger>
