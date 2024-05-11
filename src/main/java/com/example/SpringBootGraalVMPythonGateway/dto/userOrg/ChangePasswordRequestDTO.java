@@ -13,6 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChangePasswordRequestDTO {
 
+    @NotEmpty(message = "Не должно быть пустым")
     private String oldPassword;
 
     @NotEmpty(message = "Не должно быть пустым")

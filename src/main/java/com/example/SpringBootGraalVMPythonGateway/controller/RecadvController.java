@@ -30,6 +30,7 @@ public class RecadvController {
         return ResponseEntity.ok(new EdocImportResponseDTO(id));
     }
 
+
     @GetMapping("/RECADV/send/{id}")
     public ResponseEntity<Map> sendPricat(@PathVariable("id") long id){
         recadvService.sendRecadv(id);

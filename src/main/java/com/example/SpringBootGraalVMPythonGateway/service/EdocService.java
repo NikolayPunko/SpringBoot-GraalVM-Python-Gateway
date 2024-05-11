@@ -99,10 +99,10 @@ public class EdocService {
         save(copyEdoc);
     }
 
-    public String findEdocById(String tp, long id) {
+    public Edoc findEdocById(String tp, long id) {
         Optional<Edoc> findEdoc = edocRepository.findByFIDAndTP(id, tp);
         Edoc edoc = findEdoc.orElseThrow(() -> new EdocNotFoundException("Документ не найден!"));
-        return edoc.getDOC();
+        return edoc;
     }
 
     public List<Edoc> findEdocByState(String tp, String state, EdocFilterRequestDTO filterDTO, int page, int size) {
@@ -121,10 +121,17 @@ public class EdocService {
     }
 
     private String assignUNBAndUNZ(String xml, long value) {
+
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+
+
+            if(document.getDocumentElement().getTagName().equals("BLRADF")){
+                return xml;
+            }
+
 
             if(document.getDocumentElement().getElementsByTagName("UNB").getLength()==0){
                 document.createElement("UNB");

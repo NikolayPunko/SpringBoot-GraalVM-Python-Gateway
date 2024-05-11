@@ -51,7 +51,7 @@ public class PricatService {
 
 
     public String findPricatById(long id) {
-        return edocService.findEdocById("PRICAT", id);
+        return edocService.findEdocById("PRICAT", id).getDOC();
     }
 
     public List<Edoc> findPricatByState(String state, EdocFilterRequestDTO filterDTO, int page, int size) {

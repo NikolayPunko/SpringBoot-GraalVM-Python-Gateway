@@ -23,7 +23,7 @@ public class TestController {
     @GetMapping("/test")
     public String test(HttpServletRequest request) {
         return "Локальный: " + request.getLocalAddr() + "; Удаленный: "+ request.getRemoteAddr()
-                +"; Remote host: " + request.getRemoteHost() + "; Header \"X-FORWARDED-FOR\":" +request.getHeader("X-FORWARDED-FOR");
+                +"; Remote host: " + request.getRemoteHost() + "; Header \"X-FORWARDED-FOR\":" + request.getHeader("X-FORWARDED-FOR");
     }
 
 
